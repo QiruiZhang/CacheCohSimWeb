@@ -1,8 +1,12 @@
 {
+  "reset": 0,
   "num_cache": 2,
-  "cache_ID": 0,
-  "cache_type": "d",
+  "cache_ID": 1,
+  "cache_type": "f",
+  "cache_size": 128,
+  "line_size": 8,
+  "mem_size": 512,
   "cache_way": 2,
-  "inst": "ld",
+  "inst": "st",
   "addr": 66
 }

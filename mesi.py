@@ -12,46 +12,54 @@ def json_dump(filepath, dict):
 # Main
 if __name__ == "__main__":
 
+    # open inst file
+    if path.exists("inst.json"):
+        inst_file   = open("inst.json", 'r')
+        inst_dict   = json.load(inst_file)
+        reset       = inst_dict["reset"]
+        num_cache   = inst_dict["num_cache"]
+        cache_ID    = inst_dict["cache_ID"]
+        cache_type  = inst_dict["cache_type"]
+        cache_size  = inst_dict["cache_size"]
+        line_size   = inst_dict["line_size"]
+        mem_size    = inst_dict["mem_size"]
+        cache_way   = inst_dict["cache_way"]
+        inst        = inst_dict["inst"]
+        addr        = inst_dict["addr"]
+    else:
+        inst_dict = None
+
     # open cache file
+    if path.exists("cache.json"):
+        if reset == 1:
+            os.remove("cache.json")
     if path.exists("cache.json"):
         cache_file = open("cache.json", 'r')
         cache_dict = json.load(cache_file)
     else:
         cache_dict = None
 
-    # open inst file
-    if path.exists("inst.json"):
-        inst_file   = open("inst.json", 'r')
-        inst_dict   = json.load(inst_file)
-        num_cache   = inst_dict["num_cache"]
-        cache_ID    = inst_dict["cache_ID"]
-        cache_type  = inst_dict["cache_type"]
-        cache_way   = inst_dict["cache_way"]
-        inst        = inst_dict["inst"]
-        addr        = inst_dict["addr"]
-    else:
-        inst_dict = None
     
     # Create caches
     cache_list = []
     if cache_type == "d":
         for i in range(num_cache):
             if cache_dict != None:
-                cache_list.append(cache.direct_cache(i, file = cache_dict[str(i)]))
+                cache_list.append(cache.direct_cache(i, cache_size, line_size, mem_size, cache_dict[str(i)]["cache"], cache_dict[str(i)]["LSR"]))
             else:
-                cache_list.append(cache.direct_cache(i))
+                cache_list.append(cache.direct_cache(i, cache_size, line_size, mem_size, None, []))
     elif cache_type == "f":
         for i in range(num_cache):
             if cache_dict != None:
-                cache_list.append(cache.fully_cache(i, file = cache_dict[str(i)]))
+                cache_list.append(cache.fully_cache(i, cache_size, line_size, mem_size, cache_dict[str(i)]["cache"], cache_dict[str(i)]["LSR"]))
             else:
-                cache_list.append(cache.fully_cache(i))
+                cache_list.append(cache.fully_cache(i, cache_size, line_size, mem_size, None, []))
     else:
         for i in range(num_cache):
             if cache_dict != None:
-                cache_list.append(cache.nway_cache(i, file = cache_dict[str(i)], way = cache_way))
+                cache_list.append(cache.nway_cache(i, cache_size, line_size, mem_size, cache_way, cache_dict[str(i)]["cache"], cache_dict[str(i)]["LSR"]))
             else:
-                cache_list.append(cache.nawy_cache(i, way = cache_way))
+                cache_list.append(cache.nway_cache(i, cache_size, line_size, mem_size, cache_way, None, []))
 
     # Bus operation
     bus_reply = []

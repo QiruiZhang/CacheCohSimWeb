@@ -4,21 +4,23 @@ import random
 
 class cache():
 
-    def __init__(self, ID, size, line_size, mem_size, file):
+    def __init__(self, ID, size, line_size, mem_size, file, LSR):
         self.cache_ID = ID
         self.cache_size = size # Bytes
         self.cache_line_size = line_size #Bytes
         self.cache_dict = {}
         self.addr_bits = int(math.log2(mem_size))
         self.cache_num_line = int(size/line_size)
+         # For LSR
+        self.line_queue = LSR
 
         if file == None:
             for i in range(self.cache_num_line):
-                self.cache_dict[i] = {"addr": None,
-                                    "tag": None,
-                                    "index": None,
-                                    "offset": None,
-                                    "protocol": "I"}
+                self.cache_dict[str(i)] = {"addr": None,
+                                           "tag": None,
+                                           "index": None,
+                                           "offset": None,
+                                           "protocol": "I"}
         else:
             self.cache_dict = file
 
@@ -32,14 +34,14 @@ class cache():
             print(f"line[{key}] = {val}")
 
     def return_cache_dict(self):
-        return {self.cache_ID: self.cache_dict}
+        return {self.cache_ID: {"cache": self.cache_dict, "LSR": self.line_queue}}
 
 
 # Direct-map
 class direct_cache(cache):
 
-    def __init__(self, ID, size = 128, line_size = 8, mem_size = 512, file = None):
-        super().__init__(ID, size, line_size, mem_size, file)
+    def __init__(self, ID, size = 128, line_size = 8, mem_size = 512, file = None, LSR = []):
+        super().__init__(ID, size, line_size, mem_size, file, LSR)
 
     def cache_operation(self, inst, addr):
         hit = False
@@ -70,11 +72,11 @@ class direct_cache(cache):
                         bus_info = "BusInv"
             # Miss
             if hit == False:
-                self.cache_dict[int(index,2)]["addr"]     = addr
-                self.cache_dict[int(index,2)]["tag"]      = tag
-                self.cache_dict[int(index,2)]["index"]    = index
-                self.cache_dict[int(index,2)]["offset"]   = offset
-                self.cache_dict[int(index,2)]["protocol"] = "M"
+                self.cache_dict[str(int(index,2))]["addr"]     = addr
+                self.cache_dict[str(int(index,2))]["tag"]      = tag
+                self.cache_dict[str(int(index,2))]["index"]    = index
+                self.cache_dict[str(int(index,2))]["offset"]   = offset
+                self.cache_dict[str(int(index,2))]["protocol"] = "M"
                 bus_info = "BusRdX"
         
         # Inst = Load
@@ -91,14 +93,14 @@ class direct_cache(cache):
                         val["protocol"] = "S"
             # Miss
             if hit == False:
-                self.cache_dict[int(index,2)]["addr"]     = addr
-                self.cache_dict[int(index,2)]["tag"]      = tag
-                self.cache_dict[int(index,2)]["index"]    = index
-                self.cache_dict[int(index,2)]["offset"]   = offset
-                self.cache_dict[int(index,2)]["protocol"] = "E" # fix it
+                self.cache_dict[str(int(index,2))]["addr"]     = addr
+                self.cache_dict[str(int(index,2))]["tag"]      = tag
+                self.cache_dict[str(int(index,2))]["index"]    = index
+                self.cache_dict[str(int(index,2))]["offset"]   = offset
+                self.cache_dict[str(int(index,2))]["protocol"] = "E" # fix it
                 bus_info = "BusRd"
 
-        return {"hit": hit, "bus_info": bus_info, "dict_key": int(index,2)}
+        return {"hit": hit, "bus_info": bus_info, "dict_key": str(int(index,2))}
 
     def bus_operation(self, bus_info, addr):
         addr_bin  = self.decimal2binary(addr, self.addr_bits)
@@ -158,12 +160,11 @@ class direct_cache(cache):
 # Fully Associative
 class fully_cache(cache):
 
-    def __init__(self, ID, size = 128, line_size = 8, mem_size = 512, file = None):
-        super().__init__(ID, size, line_size, mem_size, file)
-        # For LSR
-        self.line_queue = []
+    def __init__(self, ID, size = 128, line_size = 8, mem_size = 512, file = None, LSR = []):
+        super().__init__(ID, size, line_size, mem_size, file, LSR)
 
     def cache_operation(self, inst, addr):
+        e2s_key  = None
         hit      = False
         bus_info = None
         addr_bin = self.decimal2binary(addr, self.addr_bits)
@@ -208,9 +209,9 @@ class fully_cache(cache):
                 # Queue is not full yet
                 else: 
                     # Create a random line slot number
-                    num = random.randint(0, self.cache_num_line - 1)
+                    num = str(random.randint(0, self.cache_num_line - 1))
                     while (num in self.line_queue):
-                        num = random.randint(0, self.cache_num_line - 1)
+                        num = str(random.randint(0, self.cache_num_line - 1))
 
                     self.cache_dict[num]["addr"]     = addr
                     self.cache_dict[num]["tag"]      = tag
@@ -246,13 +247,14 @@ class fully_cache(cache):
                     self.line_queue.append(self.line_queue[0])
                     self.line_queue.pop(0)
                     bus_info = "BusRd"
+                    e2s_key  = self.line_queue[0]
 
                 # Queue is not full yet
                 else: 
                     # Create a random line slot number
-                    num = random.randint(0, self.cache_num_line - 1)
+                    num = str(random.randint(0, self.cache_num_line - 1))
                     while (num in self.line_queue):
-                        num = random.randint(0, self.cache_num_line - 1)
+                        num = str(random.randint(0, self.cache_num_line - 1))
 
                     self.cache_dict[num]["addr"]     = addr
                     self.cache_dict[num]["tag"]      = tag
@@ -261,8 +263,9 @@ class fully_cache(cache):
                     self.cache_dict[num]["protocol"] = "E" # fix it
                     self.line_queue.append(num)
                     bus_info = "BusRd"
+                    e2s_key  = num
 
-        return {"hit": hit, "bus_info": bus_info, "dict_key": num}
+        return {"hit": hit, "bus_info": bus_info, "dict_key": e2s_key}
     
     def bus_operation(self, bus_info, addr):
         addr_bin = self.decimal2binary(addr, self.addr_bits)
@@ -322,16 +325,17 @@ class fully_cache(cache):
 # N-way Associative
 class nway_cache(cache):
 
-    def __init__(self, ID, size = 128, line_size = 8, mem_size = 512, way = 2, file = None):
-        super().__init__(ID, size, line_size, mem_size, file)
+    def __init__(self, ID, size = 128, line_size = 8, mem_size = 512, way = 2, file = None, LSR = []):
+        super().__init__(ID, size, line_size, mem_size, file, LSR)
         self.way = way
-        # For LSR
-        self.line_queue = []
-        for i in range(int(self.cache_num_line/self.way)):
-            list_temp = []
-            self.line_queue.append(list_temp)
+
+        if len(LSR) == 0:
+            for i in range(int(self.cache_num_line/self.way)):
+                list_temp = []
+                self.line_queue.append(list_temp)
 
     def cache_operation(self, inst, addr):
+        e2s_key  = None
         hit      = False
         bus_info = None
         addr_bin = self.decimal2binary(addr, self.addr_bits)
@@ -382,9 +386,9 @@ class nway_cache(cache):
                 # Queue is not full yet
                 else: 
                     # Create a random line slot number
-                    num = random.randint((int(index, 2) * self.way), (int(index, 2) * self.way) + self.way - 1)
+                    num = str(random.randint((int(index, 2) * self.way), (int(index, 2) * self.way) + self.way - 1))
                     while (num in self.line_queue[int(index, 2)]):
-                        num = random.randint((int(index, 2) * self.way), (int(index, 2) * self.way) + self.way - 1)
+                        num = str(random.randint((int(index, 2) * self.way), (int(index, 2) * self.way) + self.way - 1))
 
                     self.cache_dict[num]["addr"]     = addr
                     self.cache_dict[num]["tag"]      = tag
@@ -420,13 +424,14 @@ class nway_cache(cache):
                     self.line_queue[int(index, 2)].append(self.line_queue[int(index, 2)][0])
                     self.line_queue[int(index, 2)].pop(0)
                     bus_info = "BusRd"
+                    e2s_key = self.line_queue[int(index, 2)][0]
 
                 # Queue is not full yet
                 else: 
                     # Create a random line slot number
-                    num = random.randint((int(index, 2) * self.way), (int(index, 2) * self.way) + self.way - 1)
+                    num = str(random.randint((int(index, 2) * self.way), (int(index, 2) * self.way) + self.way - 1))
                     while (num in self.line_queue[int(index, 2)]):
-                        num = random.randint((int(index, 2) * self.way), (int(index, 2) * self.way) + self.way - 1)
+                        num = str(random.randint((int(index, 2) * self.way), (int(index, 2) * self.way) + self.way - 1))
 
                     self.cache_dict[num]["addr"]     = addr
                     self.cache_dict[num]["tag"]      = tag
@@ -435,8 +440,9 @@ class nway_cache(cache):
                     self.cache_dict[num]["protocol"] = "E" # fix it
                     self.line_queue[int(index, 2)].append(num)
                     bus_info = "BusRd"
+                    e2s_key = num
 
-        return {"hit": hit, "bus_info": bus_info, "dict_key": num}
+        return {"hit": hit, "bus_info": bus_info, "dict_key": e2s_key}
 
     def bus_operation(self, bus_info, addr):
         addr_bin = self.decimal2binary(addr, self.addr_bits)
