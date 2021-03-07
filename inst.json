@@ -1,0 +1,8 @@
+{
+  "num_cache": 2,
+  "cache_ID": 0,
+  "cache_type": "d",
+  "cache_way": 2,
+  "inst": "ld",
+  "addr": 66
+}
