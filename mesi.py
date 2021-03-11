@@ -18,14 +18,14 @@ if __name__ == "__main__":
         inst_dict   = json.load(inst_file)
         reset       = inst_dict["reset"]
         num_cache   = inst_dict["num_cache"]
-        cache_ID    = inst_dict["cache_ID"]
         cache_type  = inst_dict["cache_type"]
         cache_size  = inst_dict["cache_size"]
         line_size   = inst_dict["line_size"]
         mem_size    = inst_dict["mem_size"]
         cache_way   = inst_dict["cache_way"]
-        inst        = inst_dict["inst"]
-        addr        = inst_dict["addr"]
+        node_inst   = {}
+        for i in range(num_cache):
+            node_inst[i] = inst_dict[f"node_{i}"]
     else:
         inst_dict = None
 
@@ -61,18 +61,20 @@ if __name__ == "__main__":
             else:
                 cache_list.append(cache.nway_cache(i, cache_size, line_size, mem_size, cache_way, None, []))
 
-    # Bus operation
-    bus_reply = []
-    bus_info = cache_list[cache_ID].cache_operation(inst, addr)
-    print(bus_info["bus_info"])
-    for i in cache_list:
-        if i.cache_ID != cache_ID:
-            bus_reply.append(i.bus_operation(bus_info["bus_info"], addr)["bus_reply"])
-            print(bus_reply)
+    for node, inst_list in node_inst.items():
+        for k in inst_list:
+            # Bus operation
+            bus_reply = []
+            bus_info = cache_list[node].cache_operation(k[0], k[1])
+            print(bus_info["bus_info"])
+            for i in cache_list:
+                if i.cache_ID != node:
+                    bus_reply.append(i.bus_operation(bus_info["bus_info"], k[1])["bus_reply"])
+                    print(bus_reply)
 
-    # Change from E to S
-    if bus_info["bus_info"] == "BusRd" and True in bus_reply:
-        cache_list[cache_ID].cache_dict[bus_info["dict_key"]]["protocol"] = "S"
+            # Change from E to S
+            if bus_info["bus_info"] == "BusRd" and True in bus_reply:
+                cache_list[node].cache_dict[bus_info["dict_key"]]["protocol"] = "S"
 
     # Print out cache for debug
     for i in cache_list:

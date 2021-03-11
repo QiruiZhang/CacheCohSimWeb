@@ -1,34 +1,19 @@
 {
   "reset": 0,
   "num_cache": 2,
-  "cache_ID": 1,
-  "cache_type": "f",
+  "cache_type": "d",
   "cache_size": 128,
   "line_size": 8,
   "mem_size": 512,
   "cache_way": 2,
   
   "node_0": [
-    ["nop", 0], 
-    ["st", 66], 
-    ["ld", 66]
+    ["st",66], 
+    ["ld",66]
   ],
 
   "node_1": [
-    ["nop", 0], 
-    ["st", 77], 
-    ["ld", 77]
-  ],
-
-  "node_2": [
-    ["nop", 0], 
-    ["st", 88], 
-    ["ld", 88]
-  ],
-
-  "node_3": [
-    ["nop", 0], 
-    ["st", 99], 
-    ["ld", 99]
-  ]   
+    ["st",66], 
+    ["ld",66]
+  ]
 }
