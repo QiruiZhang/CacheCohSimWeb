@@ -116,11 +116,16 @@ class proc_node(cache):
             pass
     
     # MSI cache coherence protocol controller
-    def cache_ctrl_msi(self):
+    def cache_ctrl_msi(self):     
       # First handle processor-side instructions
         if (not self.CRHR):
-            self.CRHR_inst = self.insts[self.PC]
-            self.PC += 1
+        # Check end of program
+            if (self.PC >= len(self.insts)):
+                print("End of node_" + str(self.cache_ID) + " program!")
+                return
+            else:
+                self.CRHR_inst = self.insts[self.PC]
+                self.PC += 1
         op = self.CRHR_inst[0]
         addr = self.CRHR_inst[1]
         
@@ -259,7 +264,10 @@ class proc_node(cache):
                             print("State Transition: IM_A->M @ $-line-" + str(index_dec) + " with addr " + str(addr) + "!")
           # State: S
             elif cache_line["protocol"] == "S":
-                if op == "st":
+                if op == "ld":
+                    if (self.print_flag):
+                        print("Cache Hit: Load @ $-line-" + str(index_dec) + " with addr " + str(addr) + "!")
+                elif op == "st":
                     # update output msg
                     self.msg_out = {
                         "type": "GetM",
@@ -389,7 +397,13 @@ class proc_node(cache):
                             print("State Transition: SM_A->M @ $-line-" + str(index_dec) + " with addr " + str(addr) + "!")
           # State: M
             elif cache_line["protocol"] == "M":
-                if op == "ev":
+                if op == "ld":
+                    if (self.print_flag):
+                        print("Cache Hit: Load @ $-line-" + str(index_dec) + " with addr " + str(addr) + "!")
+                elif op == "st":
+                    if (self.print_flag):
+                        print("Cache Hit: Store @ $-line-" + str(index_dec) + " with addr " + str(addr) + "!")
+                elif op == "ev":
                     # update output msg
                     self.msg_out = {
                         "type": "PutM",
