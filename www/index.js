@@ -271,6 +271,6 @@ app.get('/', (req, res) => {
 });
 
 //add the router
-app.listen(process.env.port || 3000);
-
-console.log('Running at Port 3000');
+app.listen(3000,  function() {
+  console.log('Listening to port:  ' + 3000);
+});

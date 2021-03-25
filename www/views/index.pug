@@ -30,6 +30,12 @@ head
         padding: 10px;
         border: 1px solid grey;
         }
+        .float-child-two-col {
+        width:  50%;
+        float: left;
+        padding: 10px;
+        border: none;
+        }
         table, th, td {
         border: 1px solid black;
         }
@@ -43,32 +49,105 @@ head
         table{
         width: 100%
         }
-h2 Cache Coherence Simulator
-h3 Protocal: MSI
-p M-modifed | S-shared | I-invalid
-//p #{JSON.stringify(data.cache[0].LSR)}
-- var lineNum = data.inst.cache_size/data.inst.line_size
-- var ncol = 0;
-ul
-.float-container
-while ncol++ < data.inst.num_cache
-    .float-child
-        h2 Node #{ncol}
-        table
-            tbody
-            tr
-                - var irow = 0;
-                td State
-                while irow++ < lineNum
-                    if (irow-1)  == data.cache[ncol-1].LSR
-                        td(style="background-color:#FF0000") #{data.cache[ncol-1].cache[irow-1].protocol}
-                    else 
-                        td #{data.cache[ncol-1].cache[irow-1].protocol}
-            tr
-                - var irow = 0;
-                td Addr
-                while irow++ < lineNum
-                    if (irow-1) == data.cache[ncol-1].LSR
-                        td(style="background-color:#FF0000") #{data.cache[ncol-1].cache[irow-1].addr}
-                    else
-                        td #{data.cache[ncol-1].cache[irow-1].addr}
+        textarea{
+            height: 100%;
+            width: 100%;
+            -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+            -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+            box-sizing: border-box;         /* Opera/IE 8+ */
+        }
+        search {
+            width: 20em;  height: 2em;
+        }
+body
+    h2 Cache Coherence Simulator
+    h3 Protocal: MSI
+    p M-modifed | S-shared | I-invalid
+    input(type='submit', value='Reset' style='float: right; margin-right: 2.5em; height:40px; width:50pxl; background-color: #4CAF50;' )
+    form(action='')
+    table(style="width:100px")
+        tbody 
+        tr
+            td(style="background-color:#FF0000;height:20px;width: 30px")
+            td(style="height:20px;") LSR
+    - var lineNum = data.inst.cache_size/data.inst.line_size
+    - var ncol = 0;
+    ul
+    .float-container
+    while ncol++ < data.inst.num_cache
+        .float-child
+            h2(style="float: left;") Node #{ncol}
+            p(style="float: right;") # Hits: 0 &nbsp &nbsp # Misses: 0 &nbsp &nbsp
+            table
+                tbody
+                tr
+                    - var irow = 0;
+                    td State
+                    while irow++ < lineNum
+                        if (irow-1)  == data.cache[ncol-1].LSR
+                            td(style="background-color:#FF0000") #{data.cache[ncol-1].cache[irow-1].protocol}
+                        else 
+                            td #{data.cache[ncol-1].cache[irow-1].protocol}
+                tr
+                    - var irow = 0;
+                    td Addr
+                    while irow++ < lineNum
+                        if (irow-1) == data.cache[ncol-1].LSR
+                            td(style="background-color:#FF0000") #{data.cache[ncol-1].cache[irow-1].addr}
+                        else
+                            td #{data.cache[ncol-1].cache[irow-1].addr}
+    
+    .float-container
+        .float-child-two-col
+            h3 Instructions
+            form(action='')
+            label(for='instr') 
+            textarea#instr(name='instr', rows='15')
+            br
+            input(type='submit', value='Verify' style='float: left; margin-right: 0.5em') 
+            form(action='')
+            input(type='submit', value='Step' style='float: left; margin-right: 0.5em') 
+            form(action='')
+            input(type='submit', value='>>' style='float: left; margin-right: 0.5em') 
+        .float-child-two-col
+            -var car = 'none';
+            h3 Setting
+            form(action='')
+            label(for='cache_type') 
+                h4 Cache configuration:
+                    select#cache_type(name='cache_type')
+                        option(value='c') Custom 
+                        option(value='d') Direct
+                        option(value='f') Fully
+            label(for='num_cache') 
+                h4 Number of nodes:
+                    select#num_cache(name='num_cache')
+                        option(value='1') 1
+                        option(value='2') 2
+                        option(value='4') 4
+            label(for='cache_size') 
+                h4 Cache Size (B):
+                    select#cache_size(name='cache_size')
+                        option(value='128') 128
+                        option(value='256') 256
+                        option(value='512') 512
+            label(for='line_size') 
+                h4 Block Size (B):
+                    select#line_size(name='line_size')
+                        option(value='4') 4
+                        option(value='8') 8
+                        option(value='16') 16
+            label(for='mem_size') 
+                h4 Memory Size (B):
+                    select#mem_size(name='mem_size')
+                        option(value='512') 512
+            label(for='cache_way') 
+                h4 Number of cache way:
+                    select#cache_way(name='cache_way')
+                        option(value='2') 2
+                        option(value='4') 4
+            
+            input(type='submit' value='Set' style='float: middle;')
+            
+        
+    
