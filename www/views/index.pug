@@ -1,0 +1,74 @@
+doctype html
+head
+    meta(name='viewport' content='width=device-width, initial-scale=1')
+    style.
+        * {
+        box-sizing: border-box;
+        }
+        /*
+        // Create two equal columns that floats next to each other 
+        .column {
+        float: left;
+        width: #{1.0/data.inst.num_cache*100}%;
+        padding: 10px;
+        height: 300px; // Should be removed. Only for demonstration 
+        }
+        // Clear floats after the columns
+        .row:after {
+        content: "";
+        display: table;
+        clear: both;
+        }
+        */
+        .float-container {
+        border: 2px solid #fff;
+        padding: 5px;
+        }
+        .float-child {
+        width:  #{1.0/data.inst.num_cache*100}%;
+        float: left;
+        padding: 10px;
+        border: 1px solid grey;
+        }
+        table, th, td {
+        border: 1px solid black;
+        }
+        td 
+        {
+            text-align: center; 
+            vertical-align: middle;
+            height: 50px; 
+            width: 50px;
+        }
+        table{
+        width: 100%
+        }
+h2 Cache Coherence Simulator
+h3 Protocal: MSI
+p M-modifed | S-shared | I-invalid
+//p #{JSON.stringify(data.cache[0].LSR)}
+- var lineNum = data.inst.cache_size/data.inst.line_size
+- var ncol = 0;
+ul
+.float-container
+while ncol++ < data.inst.num_cache
+    .float-child
+        h2 Node #{ncol}
+        table
+            tbody
+            tr
+                - var irow = 0;
+                td State
+                while irow++ < lineNum
+                    if (irow-1)  == data.cache[ncol-1].LSR
+                        td(style="background-color:#FF0000") #{data.cache[ncol-1].cache[irow-1].protocol}
+                    else 
+                        td #{data.cache[ncol-1].cache[irow-1].protocol}
+            tr
+                - var irow = 0;
+                td Addr
+                while irow++ < lineNum
+                    if (irow-1) == data.cache[ncol-1].LSR
+                        td(style="background-color:#FF0000") #{data.cache[ncol-1].cache[irow-1].addr}
+                    else
+                        td #{data.cache[ncol-1].cache[irow-1].addr}
