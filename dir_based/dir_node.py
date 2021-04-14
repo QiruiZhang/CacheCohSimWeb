@@ -74,7 +74,7 @@ class dir_node():
           
     # Input messages into the queues, used by simulator main program
     def input_msg(self, msg):
-        if msg['type'] == 'Data-TD' or msg['type'] == 'Fwd-Ack':
+        if msg['type'] == 'Data-TD' or msg['type'] == 'Fwd-Ack' or msg['type'] == 'Inv-Ack':
             self.msgq_resp.append(msg)
         else:
             self.msgq_req.append(msg)

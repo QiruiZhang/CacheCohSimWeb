@@ -49,12 +49,12 @@ class proc_node(cache):
                 
         self.CRHR_inst = ["nop", 0]
         self.CRHR = False # Coherence Request Handling Register
-        self.inv_ack_cnt = 0
-        self.inv_ack = 0
+        self.ack_cnt = 0
+        self.ack_needed = 0
         
         self.msgq_fwd = [] # Input msg queue/channel for forwarded msgs
         self.msgq_inv = [] # Input msg queue/channel for invalidations
-        self.msgq_other = [] # Input msg queue/channel for other msgs
+        self.msgq_resp = [] # Input msg queue/channel for other msgs
     
         self.msgq_out = [] # Output msg queue. Multiple output messages may be generated within a logical cycle
         self.msg_out = {
@@ -80,12 +80,15 @@ class proc_node(cache):
                 PutS
                 PutM
                 Data-TD (Data to Dir)
-                
+                Fwd-Ack
+
             node<->node message types:
                 Data-FO (Data from Owner)
                 Inv-Ack
         '''
-    
+
+        self.node_log = []
+
     # Input messages into the queues, used by simulator main program
     def input_msg(self, msg):
         if msg['type'] == 'Fwd-GetS' or msg['type'] == 'Fwd-GetM':
@@ -93,11 +96,10 @@ class proc_node(cache):
         elif msg['type'] == 'Inv':
             self.msgq_inv.append(msg)
         else:
-            self.msgq_other.append(msg)
+            self.msgq_resp.append(msg)
     
     # Get message output of the current cycle
     def output_msg(self):
-        # return [self.msg_out, self.msg_out_ch2]
         return self.msgq_out.pop(0)
     
     def addrToCacheInd(self, addr):
@@ -128,29 +130,30 @@ class proc_node(cache):
     
     # MSI cache coherence protocol controller
     def cache_ctrl_msi(self):     
-      # First handle processor-side instructions
+        # 0. PC and End of Program
         eop_flag = False
         if (not self.CRHR):
             # Check end of program
             if (self.PC >= len(self.insts)):
                 print("End of node_" + str(self.cache_ID) + " program!")
-                #return
                 eop_flag = True
             else:
                 self.CRHR_inst = self.insts[self.PC]
                 self.PC += 1
                 eop_flag = False
-        op = self.CRHR_inst[0]
-        addr = self.CRHR_inst[1]
         
-        # Setup tag and index
-        (tag, index_dec) = self.addrToCacheInd(addr)
-        cache_line = self.cache_dict[str(index_dec)]
-        DirInd_dec = self.addrToDirInd(addr) # Cache block index in the directory
+        # 1. Handle processor-side instructions
+        inst_processed = False
+        if (not self.CRHR) and (not eop_flag):
+            op = self.CRHR_inst[0]
+            addr = self.CRHR_inst[1]
+
+            # Setup tag and index
+            (tag, index_dec) = self.addrToCacheInd(addr)
+            cache_line = self.cache_dict[str(index_dec)]
+            DirInd_dec = self.addrToDirInd(addr) # Cache block index in the directory
         
-        # Finite State Machine from ch8 of 'A Primer on Memory Consistency and Cache Coherence'
-        if (op != "nop") and (not eop_flag): # only attend to the instruction when it is not no-op
-          # State: I
+            # State I
             if cache_line["protocol"] == "I":
                 if op == "ld": # Send GetS to Dir/IS_D
                     # update output msg
@@ -163,16 +166,23 @@ class proc_node(cache):
                         "req": "node_" + str(self.cache_ID)
                         }
                     self.msgq_out.append(self.msg_out)
+
                     # update cache line
                     self.cache_dict[str(index_dec)]["protocol"] = "IS_D"
                     self.cache_dict[str(index_dec)]["addr"] = DirInd_dec
                     self.cache_dict[str(index_dec)]["tag"] = tag
                     self.cache_dict[str(index_dec)]["index"] = index_dec
                     self.cache_dict[str(index_dec)]["offset"] = None
+                    
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " State Transition: I->IS_D @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    self.node_log.append(log)
                     if (self.print_flag): 
-                        print("State Transition: I->IS_D @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
+                        print(log)
+                    
                     # update CRHR
                     self.CRHR = True
+                    inst_processed = True
                 elif op == "st": # Send GetM to Dir/IM_AD
                     # update output msg
                     self.msg_out = {
@@ -184,92 +194,34 @@ class proc_node(cache):
                         "req": "node_" + str(self.cache_ID)
                     }    
                     self.msgq_out.append(self.msg_out)
+
                     # update cache line
                     self.cache_dict[str(index_dec)]["protocol"] = "IM_AD"
                     self.cache_dict[str(index_dec)]["addr"] = DirInd_dec
                     self.cache_dict[str(index_dec)]["tag"] = tag
                     self.cache_dict[str(index_dec)]["index"] = index_dec
                     self.cache_dict[str(index_dec)]["offset"] = None
+
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " State Transition: I->IM_AD @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    self.node_log.append(log)
                     if (self.print_flag): 
-                        print("State Transition: I->IM_AD @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
+                        print(log)
+
                     # update CRHR
                     self.CRHR = True
-          # State: IS_D
-            elif cache_line["protocol"] == "IS_D":
-                if (len(self.msgq_other) != 0) and (self.msgq_other[0]["type"] == "Data-FD" or self.msgq_other[0]["type"] == "Data-FO") and (self.msgq_other[0]["dirblk"] == DirInd_dec):
-                    # Pop msg queue
-                    self.msgq_other.pop(0)
-                    # update cache line
-                    self.cache_dict[str(index_dec)]["protocol"] = "S"
-                    if (self.print_flag):
-                        print("State Transition: IS_D->S @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
-                    # update CRHR
-                    self.CRHR = False
-          # State: IM_AD
-            elif cache_line["protocol"] == "IM_AD":
-                if (len(self.msgq_other) != 0) and (self.msgq_other[0]["dirblk"] == DirInd_dec):
-                    if(self.msgq_other[0]["type"] == "Inv-Ack"):
-                        # Pop msg queue
-                        self.msgq_other.pop(0)
-                        # update CRHR
-                        self.inv_ack_cnt += 1
-                    elif (self.msgq_other[0]["type"] == "Data-FO"):
-                        # Pop msg queue
-                        self.msgq_other.pop(0)
-                        # update cache line
-                        self.cache_dict[str(index_dec)]["protocol"] = "M"
-                        if (self.print_flag):
-                            print("State Transition: IM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
-                        # update CRHR
-                        self.CRHR = False
-                    elif (self.msgq_other[0]["type"] == "Data-FD" and self.msgq_other[0]["ack"] == 0):
-                        # Pop msg queue
-                        self.msgq_other.pop(0)
-                        # update cache line
-                        self.cache_dict[str(index_dec)]["protocol"] = "M"
-                        if (self.print_flag):
-                            print("State Transition: IM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!") 
-                        # update CRHR
-                        self.CRHR = False
-                    elif (self.msgq_other[0]["type"] == "Data-FD" and self.msgq_other[0]["ack"] > 0):
-                        # update CRHR
-                        self.inv_ack = self.msgq_other[0]["ack"]
-                        # Pop msg queue
-                        self.msgq_other.pop(0)
-                        # update cache line
-                        self.cache_dict[str(index_dec)]["protocol"] = "IM_A"
-                        if (self.print_flag):
-                            print("State Transition: IM_AD->IM_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")    
-          # State: IM_A
-            elif cache_line["protocol"] == "IM_A":
-                if (self.inv_ack == self.inv_ack_cnt): # Already received enough ack during IM_AD
-                    # update CRHR
-                    self.inv_ack = 0
-                    self.inv_ack_cnt = 0
-                    self.CRHR = False
-                    # update cache line
-                    self.cache_dict[str(index_dec)]["protocol"] = "M"
-                    if (self.print_flag):
-                        print("State Transition: IM_A->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
-                elif (len(self.msgq_other) != 0) and (self.msgq_other[0]["type"] == "Inv-Ack") and (self.msgq_other[0]["dirblk"] == DirInd_dec):
-                    # Pop msg queue
-                    self.msgq_other.pop(0)
-                    # update CRHR
-                    self.inv_ack_cnt += 1
-                    if (self.inv_ack == self.inv_ack_cnt): # if Last Ack
-                        # update CRHR
-                        self.inv_ack = 0
-                        self.inv_act_cnt = 0
-                        self.CRHR = False
-                        # update cache line
-                        self.cache_dict[str(index_dec)]["protocol"] = "M"
-                        if (self.print_flag):
-                            print("State Transition: IM_A->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
-          # State: S
+                    inst_processed = True
+            # State: S
             elif cache_line["protocol"] == "S":
                 if op == "ld":
-                    if (self.print_flag):
-                        print("Cache Hit: Load @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!")
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " Cache Hit: Load @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!"
+                    self.node_log.append(log)
+                    if (self.print_flag): 
+                        print(log)  
+
+                    # Update CRHR
+                    inst_processed = True
                 elif op == "st":
                     # update output msg
                     self.msg_out = {
@@ -281,16 +233,23 @@ class proc_node(cache):
                         "req": "node_" + str(self.cache_ID)
                     }
                     self.msgq_out.append(self.msg_out)
+                    
                     # update cache line
                     self.cache_dict[str(index_dec)]["protocol"] = "SM_AD"
                     self.cache_dict[str(index_dec)]["addr"] = DirInd_dec
                     self.cache_dict[str(index_dec)]["tag"] = tag
                     self.cache_dict[str(index_dec)]["index"] = index_dec
                     self.cache_dict[str(index_dec)]["offset"] = None
+                  
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " State Transition: S->SM_AD @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    self.node_log.append(log)
                     if (self.print_flag): 
-                        print("State Transition: S->SM_AD @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
+                        print(log) 
+
                     # update CRHR
                     self.CRHR = True
+                    inst_processed = True
                 elif op == "ev":
                     # update output msg
                     self.msg_out = {
@@ -302,118 +261,61 @@ class proc_node(cache):
                         "req": None
                     }
                     self.msgq_out.append(self.msg_out)
+                    
                     # update cache line
                     self.cache_dict[str(index_dec)]["protocol"] = "SI_A"
+
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " State Transition: S->SI_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    self.node_log.append(log)
                     if (self.print_flag): 
-                        print("State Transition: S->SI_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
+                        print(log) 
+                    
                     # update CRHR
                     self.CRHR = True
-                elif (len(self.msgq_inv) != 0) and (self.msgq_inv[0]["dirblk"] == DirInd_dec):
-                    # update output msg
-                    self.msg_out = {
-                        "type": "Inv-Ack",
-                        "ack": 0,
-                        "dirblk": DirInd_dec,
-                        "src": "node_" + str(self.cache_ID),
-                        "dst": self.msgq_inv[0]["req"],
-                        "req": None
-                    }
-                    self.msgq_out.append(self.msg_out)
-                    # Pop msg queue
-                    self.msgq_inv.pop(0)
-                    # update cache line
-                    self.cache_dict[str(index_dec)]["protocol"] = "I"
-                    self.cache_dict[str(index_dec)]["addr"] = None
-                    self.cache_dict[str(index_dec)]["tag"] = None
-                    self.cache_dict[str(index_dec)]["index"] = None
-                    self.cache_dict[str(index_dec)]["offset"] = None
-                    if (self.print_flag): 
-                        print("State Transition: S->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
-          # State: SM_AD
+                    inst_processed = True
+            # State: SM_AD
             elif cache_line["protocol"] == "SM_AD":
-                if (len(self.msgq_inv) != 0) and (self.msgq_inv[0]["dirblk"] == DirInd_dec): # Check Inv first
-                    # update output msg
-                    self.msg_out = {
-                        "type": "Inv-Ack",
-                        "ack": 0,
-                        "dirblk": DirInd_dec,
-                        "src": "node_" + str(self.cache_ID),
-                        "dst": self.msgq_inv[0]["req"],
-                        "req": None
-                    }
-                    self.msgq_out.append(self.msg_out)
-                    # Pop msg queue
-                    self.msgq_inv.pop(0)
-                    # update cache line
-                    self.cache_dict[str(index_dec)]["protocol"] = "IM_AD"
+                if op == "ld":
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " Cache Hit: Load @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!"
+                    self.node_log.append(log)
                     if (self.print_flag): 
-                        print("State Transition: SM_AD->IM_AD @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
-                elif (len(self.msgq_other) != 0) and (self.msgq_other[0]["dirblk"] == DirInd_dec):
-                    if(self.msgq_other[0]["type"] == "Inv-Ack"):
-                        # Pop msg queue
-                        self.msgq_other.pop(0)
-                        # update CRHR
-                        self.inv_ack_cnt += 1
-                    elif (self.msgq_other[0]["type"] == "Data-FO"):
-                        # Pop msg queue
-                        self.msgq_other.pop(0)
-                        # update cache line
-                        self.cache_dict[str(index_dec)]["protocol"] = "M"
-                        if (self.print_flag):
-                            print("State Transition: SM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
-                        # update CRHR
-                        self.CRHR = False
-                    elif (self.msgq_other[0]["type"] == "Data-FD" and self.msgq_other[0]["ack"] == 0):
-                        # Pop msg queue
-                        self.msgq_other.pop(0)
-                        # update cache line
-                        self.cache_dict[str(index_dec)]["protocol"] = "M"
-                        if (self.print_flag):
-                            print("State Transition: SM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!") 
-                        # update CRHR
-                        self.CRHR = False
-                    elif (self.msgq_other[0]["type"] == "Data-FD" and self.msgq_other[0]["ack"] > 0):
-                        # update CRHR
-                        self.inv_ack = self.msgq_other[0]["ack"]
-                        # Pop msg queue
-                        self.msgq_other.pop(0)
-                        # update cache line
-                        self.cache_dict[str(index_dec)]["protocol"] = "SM_A"
-                        if (self.print_flag):
-                            print("State Transition: SM_AD->SM_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
-          # State: SM_A
+                        print(log)  
+
+                    # Update CRHR
+                    inst_processed = True
+            # State: SM_A
             elif cache_line["protocol"] == "SM_A":
-                if (self.inv_ack == self.inv_ack_cnt): # Already received enough ack during SM_AD
-                    # update CRHR
-                    self.inv_ack = 0
-                    self.inv_ack_cnt = 0
-                    self.CRHR = False
-                    # update cache line
-                    self.cache_dict[str(index_dec)]["protocol"] = "M"
-                    if (self.print_flag):
-                        print("State Transition: SM_A->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
-                elif (len(self.msgq_other) != 0) and (self.msgq_other[0]["type"] == "Inv-Ack") and (self.msgq_other[0]["dirblk"] == DirInd_dec):
-                    # Pop msg queue
-                    self.msgq_other.pop(0)
-                    # update CRHR
-                    self.inv_ack_cnt += 1
-                    if (self.inv_ack == self.inv_ack_cnt): # if Last Ack
-                        # update CRHR
-                        self.inv_ack = 0
-                        self.inv_act_cnt = 0
-                        self.CRHR = False
-                        # update cache line
-                        self.cache_dict[str(index_dec)]["protocol"] = "M"
-                        if (self.print_flag):
-                            print("State Transition: SM_A->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
-          # State: M
+                if op == "ld":
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " Cache Hit: Load @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!"
+                    self.node_log.append(log)
+                    if (self.print_flag): 
+                        print(log)  
+
+                    # Update CRHR
+                    inst_processed = True
+            # State: M
             elif cache_line["protocol"] == "M":
                 if op == "ld":
-                    if (self.print_flag):
-                        print("Cache Hit: Load @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!")
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " Cache Hit: Load @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!"
+                    self.node_log.append(log)
+                    if (self.print_flag): 
+                        print(log)  
+
+                    # Update CRHR
+                    inst_processed = True
                 elif op == "st":
-                    if (self.print_flag):
-                        print("Cache Hit: Store @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!")
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " Cache Hit: Store @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!"
+                    self.node_log.append(log)
+                    if (self.print_flag): 
+                        print(log)  
+
+                    # Update CRHR
+                    inst_processed = True
                 elif op == "ev":
                     # update output msg
                     self.msg_out = {
@@ -425,173 +327,186 @@ class proc_node(cache):
                         "req": None
                     }
                     self.msgq_out.append(self.msg_out)
+                    
                     # update cache line
                     self.cache_dict[str(index_dec)]["protocol"] = "MI_A"
+                    
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " State Transition: M->MI_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    self.node_log.append(log)
                     if (self.print_flag): 
-                        print("State Transition: M->MI_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
+                        print(log)  
+
                     # update CRHR
                     self.CRHR = True
-                elif (len(self.msgq_fwd) != 0) and (self.msgq_fwd[0]["dirblk"] == DirInd_dec):
-                    if (self.msgq_fwd[0]["type"] == "Fwd-GetS"):
-                        # update output msg
-                        self.msg_out = {
-                            "type": "Data-FO",
-                            "ack": 0,
-                            "dirblk": DirInd_dec,
-                            "src": "node_" + str(self.cache_ID),
-                            "dst": self.msgq_fwd[0]["req"],
-                            "req": None
-                        }
-                        self.msgq_out.append(self.msg_out)
-                        self.msg_out = {
-                            "type": "Data-TD",
-                            "ack": 0,
-                            "dirblk": DirInd_dec,
-                            "src": "node_" + str(self.cache_ID),
-                            "dst": "dir",
-                            "req": None
-                        }
-                        self.msgq_out.append(self.msg_out)
-                        # Pop msg queue
-                        self.msgq_fwd.pop(0)
-                        # update cache line
-                        self.cache_dict[str(index_dec)]["protocol"] = "S"
-                        if (self.print_flag): 
-                            print("State Transition: M->S @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
-                    elif (self.msgq_fwd[0]["type"] == "Fwd-GetM"):
-                       # update output msg
-                        self.msg_out = {
-                            "type": "Data-FO",
-                            "ack": 0,
-                            "dirblk": DirInd_dec,
-                            "src": "node_" + str(self.cache_ID),
-                            "dst": self.msgq_fwd[0]["req"],
-                            "req": None
-                        }
-                        self.msgq_out.append(self.msg_out)
-                        # Pop msg queue
-                        self.msgq_fwd.pop(0)
-                        # update cache line
-                        self.cache_dict[str(index_dec)]["protocol"] = "I"
-                        self.cache_dict[str(index_dec)]["addr"] = None
-                        self.cache_dict[str(index_dec)]["tag"] = None
-                        self.cache_dict[str(index_dec)]["index"] = None
-                        self.cache_dict[str(index_dec)]["offset"] = None
-                        if (self.print_flag): 
-                            print("State Transition: M->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
-          # State: MI_A
-            elif cache_line["protocol"] == "MI_A":
-                if (len(self.msgq_fwd) != 0) and (self.msgq_fwd[0]["dirblk"] == DirInd_dec):
-                    if (self.msgq_fwd[0]["type"] == "Fwd-GetS"):
-                        # update output msg
-                        self.msg_out = {
-                            "type": "Data-FO",
-                            "ack": 0,
-                            "dirblk": DirInd_dec,
-                            "src": "node_" + str(self.cache_ID),
-                            "dst": self.msgq_fwd[0]["req"],
-                            "req": None
-                        }
-                        self.msgq_out.append(self.msg_out)
-                        self.msg_out = {
-                            "type": "Data-TD",
-                            "ack": 0,
-                            "dirblk": DirInd_dec,
-                            "src": "node_" + str(self.cache_ID),
-                            "dst": "dir",
-                            "req": None
-                        }
-                        self.msgq_out.append(self.msg_out)
-                        # Pop msg queue
-                        self.msgq_fwd.pop(0)
-                        # update cache line
-                        self.cache_dict[str(index_dec)]["protocol"] = "SI_A"
-                        if (self.print_flag): 
-                            print("State Transition: MI_A->SI_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
-                    elif (self.msgq_fwd[0]["type"] == "Fwd-GetM"):
-                       # update output msg
-                        self.msg_out = {
-                            "type": "Data-FO",
-                            "ack": 0,
-                            "dirblk": DirInd_dec,
-                            "src": "node_" + str(self.cache_ID),
-                            "dst": self.msgq_fwd[0]["req"],
-                            "req": None
-                        }
-                        self.msgq_out.append(self.msg_out)
-                        # Pop msg queue
-                        self.msgq_fwd.pop(0)
-                        # update cache line
-                        self.cache_dict[str(index_dec)]["protocol"] = "II_A"
-                        if (self.print_flag): 
-                            print("State Transition: MI_A->II_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
-                elif (len(self.msgq_other) != 0) and (self.msgq_other[0]["type"] == "Put-Ack") and (self.msgq_other[0]["dirblk"] == DirInd_dec):
-                    # Pop msg queue
-                    self.msgq_other.pop(0)
-                    # update cache line
-                    self.cache_dict[str(index_dec)]["protocol"] = "I"
-                    self.cache_dict[str(index_dec)]["addr"] = None
-                    self.cache_dict[str(index_dec)]["tag"] = None
-                    self.cache_dict[str(index_dec)]["index"] = None
-                    self.cache_dict[str(index_dec)]["offset"] = None
-                    if (self.print_flag): 
-                        print("State Transition: MI_A->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")          
-                    # update CRHR
-                    self.CRHR = False
-          # State: SI_A
-            elif cache_line["protocol"] == "SI_A":
-                if (len(self.msgq_inv) != 0) and (self.msgq_inv[0]["dirblk"] == DirInd_dec):
+                    inst_processed = True
+            else:
+                pass
+
+        # 2. Handle Fwd Input Msg Queue
+        msgq_fwd_popped = False
+        if (not inst_processed) and (len(self.msgq_fwd) != 0):
+            head_msg = self.msgq_fwd[0]
+            DirInd_dec = head_msg["dirblk"]
+            index_dec = DirInd_dec % self.cache_num_line
+            cache_line = self.cache_dict[str(index_dec)]
+            
+            # State: M
+            if cache_line["protocol"] == "M":
+                if (head_msg["type"] == "Fwd-GetS"):
                     # update output msg
                     self.msg_out = {
-                        "type": "Inv-Ack",
+                        "type": "Data-FO",
                         "ack": 0,
                         "dirblk": DirInd_dec,
                         "src": "node_" + str(self.cache_ID),
-                        "dst": self.msgq_inv[0]["req"],
+                        "dst": head_msg["req"],
                         "req": None
                     }
                     self.msgq_out.append(self.msg_out)
+
+                    self.msg_out = {
+                        "type": "Data-TD",
+                        "ack": 0,
+                        "dirblk": DirInd_dec,
+                        "src": "node_" + str(self.cache_ID),
+                        "dst": "dir",
+                        "req": None
+                    }
+                    self.msgq_out.append(self.msg_out)
+                    
+                    # update cache line
+                    self.cache_dict[str(index_dec)]["protocol"] = "S"
+
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " State Transition: M->S @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    self.node_log.append(log)
+                    if (self.print_flag): 
+                        print(log) 
+
                     # Pop msg queue
-                    self.msgq_inv.pop(0)
+                    self.msgq_fwd.pop(0)
+                    msgq_fwd_popped = True
+                elif (head_msg["type"] == "Fwd-GetM"):
+                    # update output msg
+                    self.msg_out = {
+                        "type": "Data-FO",
+                        "ack": 0,
+                        "dirblk": DirInd_dec,
+                        "src": "node_" + str(self.cache_ID),
+                        "dst": head_msg["req"],
+                        "req": None
+                    }
+                    self.msgq_out.append(self.msg_out)
+
+                    self.msg_out = {
+                        "type": "Fwd-Ack",
+                        "ack": 0,
+                        "dirblk": DirInd_dec,
+                        "src": "node_" + str(self.cache_ID),
+                        "dst": "dir",
+                        "req": None
+                    }
+                    self.msgq_out.append(self.msg_out)
+
+                    # update cache line
+                    self.cache_dict[str(index_dec)]["protocol"] = "I"
+                    self.cache_dict[str(index_dec)]["addr"] = None
+                    self.cache_dict[str(index_dec)]["tag"] = None
+                    self.cache_dict[str(index_dec)]["index"] = None
+                    self.cache_dict[str(index_dec)]["offset"] = None
+                    
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " State Transition: M->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    self.node_log.append(log)
+                    if (self.print_flag): 
+                        print(log) 
+
+                    # Pop msg queue
+                    self.msgq_fwd.pop(0)
+                    msgq_fwd_popped = True
+            # State: MI_A
+            elif cache_line["protocol"] == "MI_A":
+                if (head_msg["type"] == "Fwd-GetS"):
+                    # update output msg
+                    self.msg_out = {
+                        "type": "Data-FO",
+                        "ack": 0,
+                        "dirblk": DirInd_dec,
+                        "src": "node_" + str(self.cache_ID),
+                        "dst": head_msg["req"],
+                        "req": None
+                    }
+                    self.msgq_out.append(self.msg_out)
+
+                    self.msg_out = {
+                        "type": "Data-TD",
+                        "ack": 0,
+                        "dirblk": DirInd_dec,
+                        "src": "node_" + str(self.cache_ID),
+                        "dst": "dir",
+                        "req": None
+                    }
+                    self.msgq_out.append(self.msg_out)
+                    
+                    # update cache line
+                    self.cache_dict[str(index_dec)]["protocol"] = "SI_A"
+
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " State Transition: MI_A->SI_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    self.node_log.append(log)
+                    if (self.print_flag): 
+                        print(log) 
+
+                    # Pop msg queue
+                    self.msgq_fwd.pop(0)
+                    msgq_fwd_popped = True
+                elif (head_msg["type"] == "Fwd-GetM"):
+                    # update output msg
+                    self.msg_out = {
+                        "type": "Data-FO",
+                        "ack": 0,
+                        "dirblk": DirInd_dec,
+                        "src": "node_" + str(self.cache_ID),
+                        "dst": head_msg["req"],
+                        "req": None
+                    }
+                    self.msgq_out.append(self.msg_out)
+
+                    self.msg_out = {
+                        "type": "Fwd-Ack",
+                        "ack": 0,
+                        "dirblk": DirInd_dec,
+                        "src": "node_" + str(self.cache_ID),
+                        "dst": "dir",
+                        "req": None
+                    }
+                    self.msgq_out.append(self.msg_out)
+
                     # update cache line
                     self.cache_dict[str(index_dec)]["protocol"] = "II_A"
+                    
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " State Transition: MI_A->II_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    self.node_log.append(log)
                     if (self.print_flag): 
-                        print("State Transition: SI_A->II_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")    
-                elif (len(self.msgq_other) != 0) and (self.msgq_other[0]["type"] == "Put-Ack") and (self.msgq_other[0]["dirblk"] == DirInd_dec):
+                        print(log) 
+
                     # Pop msg queue
-                    self.msgq_other.pop(0)
-                    # update cache line
-                    self.cache_dict[str(index_dec)]["protocol"] = "I"
-                    self.cache_dict[str(index_dec)]["addr"] = None
-                    self.cache_dict[str(index_dec)]["tag"] = None
-                    self.cache_dict[str(index_dec)]["index"] = None
-                    self.cache_dict[str(index_dec)]["offset"] = None
-                    if (self.print_flag): 
-                        print("State Transition: SI_A->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")          
-                    # update CRHR
-                    self.CRHR = False          
-          # State: II_A
-            elif cache_line["protocol"] == "II_A":
-                if (len(self.msgq_other) != 0) and (self.msgq_other[0]["type"] == "Put-Ack") and (self.msgq_other[0]["dirblk"] == DirInd_dec):
-                    # Pop msg queue
-                    self.msgq_other.pop(0)
-                    # update cache line
-                    self.cache_dict[str(index_dec)]["protocol"] = "I"
-                    self.cache_dict[str(index_dec)]["addr"] = None
-                    self.cache_dict[str(index_dec)]["tag"] = None
-                    self.cache_dict[str(index_dec)]["index"] = None
-                    self.cache_dict[str(index_dec)]["offset"] = None
-                    if (self.print_flag): 
-                        print("State Transition: II_A->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")          
-                    # update CRHR
-                    self.CRHR = False
-             
-      # Then handle incoming Fwd and Inv messages        
-        if (len(self.msgq_inv) != 0):
-            DirInd_dec = self.msgq_inv[0]["dirblk"]
+                    self.msgq_fwd.pop(0)
+                    msgq_fwd_popped = True
+            else:
+                pass
+
+        # 3. Handle Inv Input Msg Queue    
+        msgq_inv_popped = False        
+        if (not inst_processed) and (not msgq_fwd_popped) and (len(self.msgq_inv) != 0):
+            head_msg = self.msgq_inv[0]
+            DirInd_dec = head_msg["dirblk"]
             index_dec = DirInd_dec % self.cache_num_line
             cache_line = self.cache_dict[str(index_dec)]
-          # State: S
+
+            # State: S
             if cache_line["protocol"] == "S":
                 # update output msg
                 self.msg_out = {
@@ -599,43 +514,73 @@ class proc_node(cache):
                     "ack": 0,
                     "dirblk": DirInd_dec,
                     "src": "node_" + str(self.cache_ID),
-                    "dst": self.msgq_inv[0]["req"],
+                    "dst": head_msg["req"],
                     "req": None
                 }
                 self.msgq_out.append(self.msg_out)
-                # Pop msg queue
-                self.msgq_inv.pop(0)
+
+                self.msg_out = {
+                    "type": "Inv-Ack",
+                    "ack": 0,
+                    "dirblk": DirInd_dec,
+                    "src": "node_" + str(self.cache_ID),
+                    "dst": "dir",
+                    "req": None
+                }
+                self.msgq_out.append(self.msg_out)
+
                 # update cache line
                 self.cache_dict[str(index_dec)]["protocol"] = "I"
                 self.cache_dict[str(index_dec)]["addr"] = None
                 self.cache_dict[str(index_dec)]["tag"] = None
                 self.cache_dict[str(index_dec)]["index"] = None
                 self.cache_dict[str(index_dec)]["offset"] = None
+                
+                # Update log
+                log = "Processor node_" + str(self.cache_ID) + " State Transition: S->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                self.node_log.append(log)
                 if (self.print_flag): 
-                    print("State Transition: S->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
-          # State: SM_AD
+                    print(log) 
+                
+                # Pop msg queue
+                self.msgq_inv.pop(0)
+                msgq_inv_popped = True
+            # State: SM_AD
             elif cache_line["protocol"] == "SM_AD":
-               # update output msg
+                # update output msg
                 self.msg_out = {
                     "type": "Inv-Ack",
                     "ack": 0,
                     "dirblk": DirInd_dec,
                     "src": "node_" + str(self.cache_ID),
-                    "dst": self.msgq_inv[0]["req"],
+                    "dst": head_msg["req"],
                     "req": None
                 }
                 self.msgq_out.append(self.msg_out)
-                # Pop msg queue
-                self.msgq_inv.pop(0)
+
+                self.msg_out = {
+                    "type": "Inv-Ack",
+                    "ack": 0,
+                    "dirblk": DirInd_dec,
+                    "src": "node_" + str(self.cache_ID),
+                    "dst": "dir",
+                    "req": None
+                }
+                self.msgq_out.append(self.msg_out)
+
                 # update cache line
                 self.cache_dict[str(index_dec)]["protocol"] = "IM_AD"
-                self.cache_dict[str(index_dec)]["addr"] = None
-                self.cache_dict[str(index_dec)]["tag"] = None
-                self.cache_dict[str(index_dec)]["index"] = None
-                self.cache_dict[str(index_dec)]["offset"] = None
+                
+                # Update log
+                log = "Processor node_" + str(self.cache_ID) + " State Transition: SM_AD->IM_AD @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                self.node_log.append(log)
                 if (self.print_flag): 
-                    print("State Transition: SM_AD->IM_AD @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")            
-          # State: SI_A  
+                    print(log) 
+                
+                # Pop msg queue
+                self.msgq_inv.pop(0)
+                msgq_inv_popped = True           
+            # State: SI_A  
             elif cache_line["protocol"] == "SI_A":
                 # update output msg
                 self.msg_out = {
@@ -643,117 +588,314 @@ class proc_node(cache):
                     "ack": 0,
                     "dirblk": DirInd_dec,
                     "src": "node_" + str(self.cache_ID),
-                    "dst": self.msgq_inv[0]["req"],
+                    "dst": head_msg["req"],
                     "req": None
                 }
                 self.msgq_out.append(self.msg_out)
-                # Pop msg queue
-                self.msgq_inv.pop(0)
+
+                self.msg_out = {
+                    "type": "Inv-Ack",
+                    "ack": 0,
+                    "dirblk": DirInd_dec,
+                    "src": "node_" + str(self.cache_ID),
+                    "dst": "dir",
+                    "req": None
+                }
+                self.msgq_out.append(self.msg_out)
+
                 # update cache line
                 self.cache_dict[str(index_dec)]["protocol"] = "II_A"
-                self.cache_dict[str(index_dec)]["addr"] = None
-                self.cache_dict[str(index_dec)]["tag"] = None
-                self.cache_dict[str(index_dec)]["index"] = None
-                self.cache_dict[str(index_dec)]["offset"] = None
-                if (self.print_flag): 
-                    print("State Transition: SI_A->II_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
 
-        if (len(self.msgq_fwd) != 0):
-            DirInd_dec = self.msgq_fwd[0]["dirblk"]
+                # Update log
+                log = "Processor node_" + str(self.cache_ID) + " State Transition: SI_A->II_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                self.node_log.append(log)
+                if (self.print_flag): 
+                    print(log) 
+                
+                # Pop msg queue
+                self.msgq_inv.pop(0)
+                msgq_inv_popped = True
+            else:
+                pass
+
+        # 4. Handle Response Input Msg Queue
+        if (not inst_processed) and (not msgq_fwd_popped) and (not msgq_inv_popped) and (len(self.msgq_resp) != 0):
+            head_msg = self.msgq_resp[0]
+            DirInd_dec = head_msg["dirblk"]
             index_dec = DirInd_dec % self.cache_num_line
             cache_line = self.cache_dict[str(index_dec)]
-            if self.msgq_fwd[0]["type"] == "Fwd-GetS":
-                if cache_line["protocol"] == "M":
-                    # update output msg
-                    self.msg_out = {
-                        "type": "Data-FO",
-                        "ack": 0,
-                        "dirblk": DirInd_dec,
-                        "src": "node_" + str(self.cache_ID),
-                        "dst": self.msgq_fwd[0]["req"],
-                        "req": None
-                    }
-                    self.msgq_out.append(self.msg_out)
-                    self.msg_out = {
-                        "type": "Data-TD",
-                        "ack": 0,
-                        "dirblk": DirInd_dec,
-                        "src": "node_" + str(self.cache_ID),
-                        "dst": "dir",
-                        "req": None
-                    }
-                    self.msgq_out.append(self.msg_out)
-                    # Pop msg queue
-                    self.msgq_fwd.pop(0)
+
+            # State: IS_D
+            if cache_line["protocol"] == "IS_D":
+                if (head_msg["type"] == "Data-FO"):
                     # update cache line
                     self.cache_dict[str(index_dec)]["protocol"] = "S"
+                    
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " State Transition: IS_D->S @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    self.node_log.append(log)
                     if (self.print_flag): 
-                        print("State Transition: M->S @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
-                elif cache_line["protocol"] == "MI_A":
-                    # update output msg
-                    self.msg_out = {
-                        "type": "Data-FO",
-                        "ack": 0,
-                        "dirblk": DirInd_dec,
-                        "src": "node_" + str(self.cache_ID),
-                        "dst": self.msgq_fwd[0]["req"],
-                        "req": None
-                    }
-                    self.msgq_out.append(self.msg_out)
-                    self.msg_out = {
-                        "type": "Data-TD",
-                        "ack": 0,
-                        "dirblk": DirInd_dec,
-                        "src": "node_" + str(self.cache_ID),
-                        "dst": "dir",
-                        "req": None
-                    }
-                    self.msgq_out.append(self.msg_out)
+                        print(log) 
+                    
                     # Pop msg queue
-                    self.msgq_fwd.pop(0)
+                    self.msgq_resp.pop(0)
+
+                    # update CRHR
+                    self.CRHR = False
+                elif (head_msg["type"] == "Data-FD" and head_msg["ack"] == 0):
                     # update cache line
-                    self.cache_dict[str(index_dec)]["protocol"] = "SI_A"
+                    self.cache_dict[str(index_dec)]["protocol"] = "S"
+                    
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " State Transition: IS_D->S @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    self.node_log.append(log)
                     if (self.print_flag): 
-                        print("State Transition: MI_A->SI_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
-            elif self.msgq_fwd[0]["type"] == "Fwd-GetM":
-                if cache_line["protocol"] == "M":
-                    # update output msg
-                    self.msg_out = {
-                        "type": "Data-FO",
-                        "ack": 0,
-                        "dirblk": DirInd_dec,
-                        "src": "node_" + str(self.cache_ID),
-                        "dst": self.msgq_fwd[0]["req"],
-                        "req": None
-                    }
-                    self.msgq_out.append(self.msg_out)
+                        print(log) 
+                    
                     # Pop msg queue
-                    self.msgq_fwd.pop(0)
+                    self.msgq_resp.pop(0)
+
+                    # update CRHR
+                    self.CRHR = False
+            # State: IM_AD
+            elif cache_line["protocol"] == "IM_AD":
+                if(head_msg["type"] == "Inv-Ack"):
+                    # Pop msg queue
+                    self.msgq_resp.pop(0)
+
+                    # update CRHR
+                    self.ack_cnt += 1
+                elif (head_msg["type"] == "Data-FO"):
+                    # update cache line
+                    self.cache_dict[str(index_dec)]["protocol"] = "M"
+
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " State Transition: IM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    self.node_log.append(log)
+                    if (self.print_flag): 
+                        print(log) 
+
+                    # Pop msg queue
+                    self.msgq_resp.pop(0)
+
+                    # update CRHR
+                    self.CRHR = False
+                elif (head_msg["type"] == "Data-FD" and head_msg["ack"] == 0):
+                    # update cache line
+                    self.cache_dict[str(index_dec)]["protocol"] = "M"
+
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " State Transition: IM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    self.node_log.append(log)
+                    if (self.print_flag): 
+                        print(log) 
+
+                    # Pop msg queue
+                    self.msgq_resp.pop(0)
+
+                    # update CRHR
+                    self.CRHR = False
+                elif (head_msg["type"] == "Data-FD" and head_msg["ack"] > 0):
+                    self.ack_needed = head_msg["ack"]
+                    if (self.ack_cnt == self.ack_needed):
+                        # update cache line
+                        self.cache_dict[str(index_dec)]["protocol"] = "M"
+
+                        # Update log
+                        log = "Processor node_" + str(self.cache_ID) + " State Transition: IM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                        self.node_log.append(log)
+                        if (self.print_flag): 
+                            print(log) 
+
+                        # update CRHR
+                        self.ack_cnt = 0
+                        self.ack_needed = 0
+                        self.CRHR = False
+                    else:
+                        # update cache line
+                        self.cache_dict[str(index_dec)]["protocol"] = "IM_A"
+
+                        # Update log
+                        log = "Processor node_" + str(self.cache_ID) + " State Transition: IM_AD->IM_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                        self.node_log.append(log)
+                        if (self.print_flag): 
+                            print(log) 
+
+                    # Pop msg queue
+                    self.msgq_resp.pop(0)   
+            # State: IM_A
+            elif cache_line["protocol"] == "IM_A":
+                if (head_msg["type"] == "Inv-Ack"):
+                    self.ack_cnt += 1
+                    if (self.ack_cnt == self.ack_needed): # if Last Ack
+                        # update cache line
+                        self.cache_dict[str(index_dec)]["protocol"] = "M"
+                        
+                        # Update log
+                        log = "Processor node_" + str(self.cache_ID) + " State Transition: IM_A->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                        self.node_log.append(log)
+                        if (self.print_flag): 
+                            print(log) 
+
+                        # update CRHR
+                        self.ack_cnt = 0
+                        self.ack_needed = 0
+                        self.CRHR = False
+
+                    # Pop msg queue
+                    self.msgq_resp.pop(0)
+            # State: SM_AD
+            elif cache_line["protocol"] == "SM_AD":
+                if(head_msg["type"] == "Inv-Ack"):
+                    # Pop msg queue
+                    self.msgq_resp.pop(0)
+
+                    # update CRHR
+                    self.ack_cnt += 1
+                elif (head_msg["type"] == "Data-FO"):
+                    # update cache line
+                    self.cache_dict[str(index_dec)]["protocol"] = "M"
+
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " State Transition: SM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    self.node_log.append(log)
+                    if (self.print_flag): 
+                        print(log) 
+
+                    # Pop msg queue
+                    self.msgq_resp.pop(0)
+
+                    # update CRHR
+                    self.CRHR = False
+                elif (head_msg["type"] == "Data-FD" and head_msg["ack"] == 0):
+                    # update cache line
+                    self.cache_dict[str(index_dec)]["protocol"] = "M"
+
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " State Transition: SM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    self.node_log.append(log)
+                    if (self.print_flag): 
+                        print(log) 
+
+                    # Pop msg queue
+                    self.msgq_resp.pop(0)
+
+                    # update CRHR
+                    self.CRHR = False
+                elif (head_msg["type"] == "Data-FD" and head_msg["ack"] > 0):
+                    self.ack_needed = head_msg["ack"]
+                    if (self.ack_cnt == self.ack_needed):
+                        # update cache line
+                        self.cache_dict[str(index_dec)]["protocol"] = "M"
+
+                        # Update log
+                        log = "Processor node_" + str(self.cache_ID) + " State Transition: SM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                        self.node_log.append(log)
+                        if (self.print_flag): 
+                            print(log) 
+
+                        # update CRHR
+                        self.ack_cnt = 0
+                        self.ack_needed = 0
+                        self.CRHR = False
+                    else:
+                        # update cache line
+                        self.cache_dict[str(index_dec)]["protocol"] = "SM_A"
+
+                        # Update log
+                        log = "Processor node_" + str(self.cache_ID) + " State Transition: SM_AD->SM_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                        self.node_log.append(log)
+                        if (self.print_flag): 
+                            print(log) 
+
+                    # Pop msg queue
+                    self.msgq_resp.pop(0)  
+            # State: SM_A
+            elif cache_line["protocol"] == "SM_A":
+                if (head_msg["type"] == "Inv-Ack"):
+                    self.ack_cnt += 1
+                    if (self.ack_cnt == self.ack_needed): # if Last Ack
+                        # update cache line
+                        self.cache_dict[str(index_dec)]["protocol"] = "M"
+                        
+                        # Update log
+                        log = "Processor node_" + str(self.cache_ID) + " State Transition: SM_A->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                        self.node_log.append(log)
+                        if (self.print_flag): 
+                            print(log) 
+
+                        # update CRHR
+                        self.ack_cnt = 0
+                        self.ack_needed = 0
+                        self.CRHR = False
+
+                    # Pop msg queue
+                    self.msgq_resp.pop(0)
+            # State: MI_A
+            elif cache_line["protocol"] == "MI_A":
+                if (head_msg["type"] == "Put-Ack"):
                     # update cache line
                     self.cache_dict[str(index_dec)]["protocol"] = "I"
                     self.cache_dict[str(index_dec)]["addr"] = None
                     self.cache_dict[str(index_dec)]["tag"] = None
                     self.cache_dict[str(index_dec)]["index"] = None
                     self.cache_dict[str(index_dec)]["offset"] = None
+                    
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " State Transition: MI_A->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    self.node_log.append(log)
                     if (self.print_flag): 
-                        print("State Transition: M->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
-                elif cache_line["protocol"] == "MI_A":
-                    # update output msg
-                    self.msg_out = {
-                        "type": "Data-FO",
-                        "ack": 0,
-                        "dirblk": DirInd_dec,
-                        "src": "node_" + str(self.cache_ID),
-                        "dst": self.msgq_fwd[0]["req"],
-                        "req": None
-                    }
-                    self.msgq_out.append(self.msg_out)
+                        print(log)
+
                     # Pop msg queue
-                    self.msgq_fwd.pop(0)
+                    self.msgq_resp.pop(0) 
+                    
+                    # update CRHR
+                    self.CRHR = False
+            # State: SI_A
+            elif cache_line["protocol"] == "SI_A":
+                if (head_msg["type"] == "Put-Ack"):
                     # update cache line
-                    self.cache_dict[str(index_dec)]["protocol"] = "II_A"
+                    self.cache_dict[str(index_dec)]["protocol"] = "I"
+                    self.cache_dict[str(index_dec)]["addr"] = None
+                    self.cache_dict[str(index_dec)]["tag"] = None
+                    self.cache_dict[str(index_dec)]["index"] = None
+                    self.cache_dict[str(index_dec)]["offset"] = None
+                    
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " State Transition: SI_A->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    self.node_log.append(log)
                     if (self.print_flag): 
-                        print("State Transition: MI_A->II_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!")
+                        print(log)
+
+                    # Pop msg queue
+                    self.msgq_resp.pop(0) 
+                    
+                    # update CRHR
+                    self.CRHR = False        
+            # State: II_A
+            elif cache_line["protocol"] == "II_A":
+                if (head_msg["type"] == "Put-Ack"):
+                    # update cache line
+                    self.cache_dict[str(index_dec)]["protocol"] = "I"
+                    self.cache_dict[str(index_dec)]["addr"] = None
+                    self.cache_dict[str(index_dec)]["tag"] = None
+                    self.cache_dict[str(index_dec)]["index"] = None
+                    self.cache_dict[str(index_dec)]["offset"] = None
+                    
+                    # Update log
+                    log = "Processor node_" + str(self.cache_ID) + " State Transition: II_A->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    self.node_log.append(log)
+                    if (self.print_flag): 
+                        print(log)
+
+                    # Pop msg queue
+                    self.msgq_resp.pop(0) 
+                    
+                    # update CRHR
+                    self.CRHR = False
+            else:
+                pass
         
     # MESI cache coherence protocol controller
     def cache_ctrl_mesi(self):
