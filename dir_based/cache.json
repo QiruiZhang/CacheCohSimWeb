@@ -62,7 +62,7 @@
         "tag": "00",
         "index": 8,
         "offset": null,
-        "protocol": "M"
+        "protocol": "IS_D"
       },
       "9": {
         "addr": null,
@@ -115,10 +115,8 @@
       }
     },
     "LSR": [],
-    "PC": 3,
-    "log": [
-      "End of node_0 program!"
-    ]
+    "PC": 7,
+    "log": []
   },
   "1": {
     "cache": {
@@ -186,11 +184,11 @@
         "protocol": "I"
       },
       "9": {
-        "addr": 9,
-        "tag": "00",
-        "index": 9,
+        "addr": null,
+        "tag": null,
+        "index": null,
         "offset": null,
-        "protocol": "M"
+        "protocol": "I"
       },
       "10": {
         "addr": null,
@@ -321,11 +319,11 @@
         "protocol": "I"
       },
       "11": {
-        "addr": 11,
-        "tag": "00",
-        "index": 11,
+        "addr": null,
+        "tag": null,
+        "index": null,
         "offset": null,
-        "protocol": "M"
+        "protocol": "I"
       },
       "12": {
         "addr": null,
@@ -357,7 +355,7 @@
       }
     },
     "LSR": [],
-    "PC": 3,
+    "PC": 2,
     "log": [
       "End of node_2 program!"
     ]
@@ -428,11 +426,11 @@
         "protocol": "I"
       },
       "9": {
-        "addr": null,
-        "tag": null,
-        "index": null,
+        "addr": 9,
+        "tag": "00",
+        "index": 9,
         "offset": null,
-        "protocol": "I"
+        "protocol": "M"
       },
       "10": {
         "addr": null,
@@ -449,11 +447,11 @@
         "protocol": "I"
       },
       "12": {
-        "addr": 12,
-        "tag": "00",
-        "index": 12,
+        "addr": null,
+        "tag": null,
+        "index": null,
         "offset": null,
-        "protocol": "M"
+        "protocol": "I"
       },
       "13": {
         "addr": null,
@@ -551,16 +549,18 @@
       },
       "8": {
         "addr": 8,
-        "protocol": "M",
-        "owner": "node_0",
-        "sharers": [],
+        "protocol": "S",
+        "owner": null,
+        "sharers": [
+          "node_0"
+        ],
         "ack_needed": 0,
         "ack_cnt": 0
       },
       "9": {
         "addr": 9,
         "protocol": "M",
-        "owner": "node_1",
+        "owner": "node_3",
         "sharers": [],
         "ack_needed": 0,
         "ack_cnt": 0
@@ -574,17 +574,17 @@
         "ack_cnt": 0
       },
       "11": {
-        "addr": 11,
-        "protocol": "M",
-        "owner": "node_2",
+        "addr": null,
+        "protocol": "I",
+        "owner": null,
         "sharers": [],
         "ack_needed": 0,
         "ack_cnt": 0
       },
       "12": {
-        "addr": 12,
-        "protocol": "M",
-        "owner": "node_3",
+        "addr": null,
+        "protocol": "I",
+        "owner": null,
         "sharers": [],
         "ack_needed": 0,
         "ack_cnt": 0
@@ -998,8 +998,12 @@
         "ack_cnt": 0
       }
     },
-    "log": []
+    "log": [
+      "Directory State Transition: I->S @ dir-block-8!"
+    ]
   },
-  "msg": [],
-  "cycle": 9
+  "msg": [
+    "Message Transaction: dir sent Data-FD (ack = 0) to node_0 for dir-block-8"
+  ],
+  "cycle": 43
 }
