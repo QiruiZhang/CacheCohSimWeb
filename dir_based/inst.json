@@ -1,11 +1,13 @@
 {
   "reset": 0,
-  "num_cache": 2,
+  "num_cache": 4,
   "cache_type": "d",
   "cache_size": 128,
   "line_size": 8,
   "mem_size": 512,
   "cache_way": 2,
+
+  "protocol": "MSI",
 
   "node_0": [
     ["nop", 0], 

@@ -3,7 +3,7 @@ import math
 
 # Directory Node Class
 class dir_node():
-    def __init__(self, protocol = 'MSI', line_size = 8, mem_size = 512, dir_file = None, print_flag = True):
+    def __init__(self, protocol = 'MSI', line_size = 8, mem_size = 512, print_flag = True):
         self.protocol = protocol # Protocol type: MSI, MESI or MOSI
 
         self.mem_size = mem_size # Bytes
@@ -11,17 +11,16 @@ class dir_node():
         self.dir_dict = {}
         self.dir_num_line = int(self.mem_size/self.mem_line_size)
 
-        if dir_file == None:
-            for i in range(self.dir_num_line):
-                self.dir_dict[str(i)] = {"addr": None, # directory block index, decimal
-                                         "protocol": "I",
-                                         "owner": None,
-                                         "sharers": [],
-                                         "ack_needed": 0,
-                                         "ack_cnt": 0
-                                        }
-        else:
-            self.dir_dict = dir_file
+        for i in range(self.dir_num_line):
+            self.dir_dict[str(i)] = {
+                "addr": None, # directory block index, decimal
+                "protocol": "I",
+                "owner": None,
+                "sharers": [],
+                "ack_needed": 0,
+                "ack_cnt": 0
+            }
+
 
         self.print_flag = print_flag
 
@@ -58,6 +57,26 @@ class dir_node():
                 Data-FO (Data from Owner)
                 Inv-Ack
         '''
+        self.dir_log = []
+
+    def dir_reset(self):
+        # Reset dict
+        for i in range(self.dir_num_line):
+            self.dir_dict[str(i)] = {
+                "addr": None, # directory block index, decimal
+                "protocol": "I",
+                "owner": None,
+                "sharers": [],
+                "ack_needed": 0,
+                "ack_cnt": 0
+            }
+
+        # Reset Queues
+        self.msgq_req = []
+        self.msgq_resp = []
+        self.msgq_out = []
+
+        # Reset log
         self.dir_log = []
 
     # transfer decimal to binary and pad with zero

@@ -38,8 +38,8 @@ class cache():
 # Processor node class inherited from cache: core + cache + cache-ctrl + msg-queues
 class proc_node(cache):
     # Object initialization
-    def __init__(self, ID, inst = [], protocol = 'MSI', size = 128, line_size = 8, mem_size = 512, cache_file = None, LSR = [], print_flag = True):
-        super().__init__(ID, size, line_size, mem_size, cache_file, LSR) # Inheritance
+    def __init__(self, ID, inst = [], protocol = 'MSI', size = 128, line_size = 8, mem_size = 512, LSR = [], print_flag = True):
+        super().__init__(str(ID), size, line_size, mem_size, None, LSR) # Inheritance
         
         self.print_flag = print_flag
         
@@ -89,6 +89,33 @@ class proc_node(cache):
 
         self.node_log = []
 
+    def proc_reset(self):
+        # Reset dict
+        for i in range(self.cache_num_line):
+            self.cache_dict[str(i)] = {
+                "addr": None, # directory block index, decimal
+                "tag": None, # binary tag
+                "index": None, # local cache block index, decimal
+                "offset": None, # not used
+                "protocol": "I"
+            }
+
+        # Reset PC and CRHR
+        self.PC = 0        
+        self.CRHR_inst = ["nop", 0]
+        self.CRHR = False
+        self.ack_cnt = 0
+        self.ack_needed = 0
+        
+        # Reset Queues
+        self.msgq_fwd = []
+        self.msgq_inv = []
+        self.msgq_resp = []
+        self.msgq_out = []
+
+        # Reset Log
+        self.node_log = []
+
     # Input messages into the queues, used by simulator main program
     def input_msg(self, msg):
         if msg['type'] == 'Fwd-GetS' or msg['type'] == 'Fwd-GetM':
@@ -130,12 +157,17 @@ class proc_node(cache):
     
     # MSI cache coherence protocol controller
     def cache_ctrl_msi(self):     
+        self.node_log = []
+
         # 0. PC and End of Program
         eop_flag = False
         if (not self.CRHR):
             # Check end of program
             if (self.PC >= len(self.insts)):
-                print("End of node_" + str(self.cache_ID) + " program!")
+                log = "End of node_" + str(self.cache_ID) + " program!"
+                self.node_log.append(log)
+                if (self.print_flag):
+                    print(log)
                 eop_flag = True
             else:
                 self.CRHR_inst = self.insts[self.PC]
