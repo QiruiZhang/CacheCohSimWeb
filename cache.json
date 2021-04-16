@@ -62,7 +62,7 @@
         "tag": "00",
         "index": "1000",
         "offset": "010",
-        "protocol": "I"
+        "protocol": "M"
       },
       "9": {
         "addr": null,
@@ -176,11 +176,11 @@
         "protocol": "I"
       },
       "8": {
-        "addr": 66,
-        "tag": "00",
-        "index": "1000",
-        "offset": "010",
-        "protocol": "M"
+        "addr": null,
+        "tag": null,
+        "index": null,
+        "offset": null,
+        "protocol": "I"
       },
       "9": {
         "addr": null,
@@ -233,7 +233,7 @@
       }
     },
     "LSR": [],
-    "PC": 2
+    "PC": 0
   },
   "2": {
     "cache": {
