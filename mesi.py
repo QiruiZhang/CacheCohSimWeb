@@ -4,6 +4,7 @@ import os.path
 import json
 from os import path
 import mesi_cache as cache
+import sys
 
 def json_dump(filepath, dict):
 
@@ -14,29 +15,26 @@ def json_dump(filepath, dict):
 if __name__ == "__main__":
 
     # open inst file
-    if path.exists("inst.json"):
-        inst_file   = open("inst.json", 'r')
-        inst_dict   = json.load(inst_file)
-        reset       = inst_dict["reset"]
-        num_cache   = inst_dict["num_cache"]
-        cache_type  = inst_dict["cache_type"]
-        cache_size  = inst_dict["cache_size"]
-        line_size   = inst_dict["line_size"]
-        mem_size    = inst_dict["mem_size"]
-        cache_way   = inst_dict["cache_way"]
-        run_node    = inst_dict["run_node"]
-        node_inst   = {}
-        for i in range(num_cache):
-            node_inst[i] = inst_dict[f"node_{i}"]
-    else:
-        inst_dict = None
+    inst_file   = open(sys.argv[1], 'r')
+    inst_dict   = json.load(inst_file)
+    reset       = inst_dict["reset"]
+    num_cache   = inst_dict["num_cache"]
+    cache_type  = inst_dict["cache_type"]
+    cache_size  = inst_dict["cache_size"]
+    line_size   = inst_dict["line_size"]
+    mem_size    = inst_dict["mem_size"]
+    cache_way   = inst_dict["cache_way"]
+    run_node    = inst_dict["run_node"]
+    node_inst   = {}
+    for i in range(num_cache):
+        node_inst[i] = inst_dict[f"node_{i}"]
+
 
     # open cache file
-    if path.exists("cache.json"):
-        if reset == 1:
-            os.remove("cache.json")
-    if path.exists("cache.json"):
-        cache_file = open("cache.json", 'r')
+    # if len(sys.argv) == 3 and reset == 1:
+    #     os.remove(sys.argv[2])
+    if len(sys.argv) == 3:
+        cache_file = open(sys.argv[2], 'r')
         cache_dict = json.load(cache_file)
     else:
         cache_dict = None
@@ -97,11 +95,14 @@ if __name__ == "__main__":
     #             cache_list[node].cache_dict[bus_info["dict_key"]]["protocol"] = "S"
 
     # Print out cache for debug
-    for i in cache_list:
-        i.print_cache()
+    # for i in cache_list:
+    #     i.print_cache()
 
     # Dump ot cache json file
     dump_dict = {}
     for i in cache_list:
         dump_dict.update(i.return_cache_dict())
     json_dump("cache.json", dump_dict)
+
+    print(json.dumps(inst_dict, indent=2))
+    print(json.dumps(dump_dict, indent=2))
