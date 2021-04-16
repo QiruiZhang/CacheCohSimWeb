@@ -68,11 +68,11 @@ if __name__ == "__main__":
     # Bus operation
     bus_reply = []
     bus_info = cache_list[run_node].cache_operation(k[0], k[1])
-    print(bus_info["bus_info"])
+    #print(bus_info["bus_info"])
     for i in cache_list:
         if i.cache_ID != run_node:
             bus_reply.append(i.bus_operation(bus_info["bus_info"], k[1])["bus_reply"])
-    print(bus_reply)
+    #print(bus_reply)
 
     # Change from E to S
     if bus_info["bus_info"] == "BusRd" and True in bus_reply:
