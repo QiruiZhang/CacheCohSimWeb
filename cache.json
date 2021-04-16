@@ -16,10 +16,10 @@
         "protocol": "I"
       },
       "2": {
-        "addr": 66,
-        "tag": "001000",
+        "addr": null,
+        "tag": null,
         "index": null,
-        "offset": "010",
+        "offset": null,
         "protocol": "I"
       },
       "3": {
@@ -58,10 +58,10 @@
         "protocol": "I"
       },
       "8": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
+        "addr": 66,
+        "tag": "00",
+        "index": "1000",
+        "offset": "010",
         "protocol": "I"
       },
       "9": {
@@ -114,9 +114,8 @@
         "protocol": "I"
       }
     },
-    "LSR": [
-      "2"
-    ]
+    "LSR": [],
+    "PC": 0
   },
   "1": {
     "cache": {
@@ -170,18 +169,18 @@
         "protocol": "I"
       },
       "7": {
-        "addr": 66,
-        "tag": "001000",
-        "index": null,
-        "offset": "010",
-        "protocol": "M"
-      },
-      "8": {
         "addr": null,
         "tag": null,
         "index": null,
         "offset": null,
         "protocol": "I"
+      },
+      "8": {
+        "addr": 66,
+        "tag": "00",
+        "index": "1000",
+        "offset": "010",
+        "protocol": "M"
       },
       "9": {
         "addr": null,
@@ -233,8 +232,7 @@
         "protocol": "I"
       }
     },
-    "LSR": [
-      "7"
-    ]
+    "LSR": [],
+    "PC": 0
   }
 }
