@@ -115,7 +115,7 @@
       }
     },
     "LSR": [],
-    "PC": 0
+    "PC": 1
   },
   "1": {
     "cache": {
@@ -181,6 +181,124 @@
         "index": "1000",
         "offset": "010",
         "protocol": "M"
+      },
+      "9": {
+        "addr": null,
+        "tag": null,
+        "index": null,
+        "offset": null,
+        "protocol": "I"
+      },
+      "10": {
+        "addr": null,
+        "tag": null,
+        "index": null,
+        "offset": null,
+        "protocol": "I"
+      },
+      "11": {
+        "addr": null,
+        "tag": null,
+        "index": null,
+        "offset": null,
+        "protocol": "I"
+      },
+      "12": {
+        "addr": null,
+        "tag": null,
+        "index": null,
+        "offset": null,
+        "protocol": "I"
+      },
+      "13": {
+        "addr": null,
+        "tag": null,
+        "index": null,
+        "offset": null,
+        "protocol": "I"
+      },
+      "14": {
+        "addr": null,
+        "tag": null,
+        "index": null,
+        "offset": null,
+        "protocol": "I"
+      },
+      "15": {
+        "addr": null,
+        "tag": null,
+        "index": null,
+        "offset": null,
+        "protocol": "I"
+      }
+    },
+    "LSR": [],
+    "PC": 2
+  },
+  "2": {
+    "cache": {
+      "0": {
+        "addr": null,
+        "tag": null,
+        "index": null,
+        "offset": null,
+        "protocol": "I"
+      },
+      "1": {
+        "addr": null,
+        "tag": null,
+        "index": null,
+        "offset": null,
+        "protocol": "I"
+      },
+      "2": {
+        "addr": null,
+        "tag": null,
+        "index": null,
+        "offset": null,
+        "protocol": "I"
+      },
+      "3": {
+        "addr": null,
+        "tag": null,
+        "index": null,
+        "offset": null,
+        "protocol": "I"
+      },
+      "4": {
+        "addr": null,
+        "tag": null,
+        "index": null,
+        "offset": null,
+        "protocol": "I"
+      },
+      "5": {
+        "addr": null,
+        "tag": null,
+        "index": null,
+        "offset": null,
+        "protocol": "I"
+      },
+      "6": {
+        "addr": null,
+        "tag": null,
+        "index": null,
+        "offset": null,
+        "protocol": "I"
+      },
+      "7": {
+        "addr": null,
+        "tag": null,
+        "index": null,
+        "offset": null,
+        "protocol": "I"
+      },
+      "8": {
+        "addr": null,
+        "tag": null,
+        "index": null,
+        "offset": null,
+        "protocol": "I"
       },
       "9": {
         "addr": null,
