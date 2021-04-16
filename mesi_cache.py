@@ -4,15 +4,17 @@ import random
 
 class cache():
 
-    def __init__(self, ID, size, line_size, mem_size, file, LSR):
+    def __init__(self, ID, size, line_size, mem_size, file, LSR, PC):
         self.cache_ID = ID
         self.cache_size = size # Bytes
         self.cache_line_size = line_size #Bytes
         self.cache_dict = {}
         self.addr_bits = int(math.log2(mem_size))
         self.cache_num_line = int(size/line_size)
-         # For LSR
+        # For LSR
         self.line_queue = LSR
+        # PC
+        self.PC = PC
 
         if file == None:
             for i in range(self.cache_num_line):
@@ -34,14 +36,14 @@ class cache():
             print(f"line[{key}] = {val}")
 
     def return_cache_dict(self):
-        return {self.cache_ID: {"cache": self.cache_dict, "LSR": self.line_queue}}
+        return {self.cache_ID: {"cache": self.cache_dict, "LSR": self.line_queue, "PC": self.PC}}
 
 
 # Direct-map
 class direct_cache(cache):
 
-    def __init__(self, ID, size = 128, line_size = 8, mem_size = 512, file = None, LSR = []):
-        super().__init__(ID, size, line_size, mem_size, file, LSR)
+    def __init__(self, ID, size = 128, line_size = 8, mem_size = 512, file = None, LSR = [], PC = 0):
+        super().__init__(ID, size, line_size, mem_size, file, LSR, PC)
 
     def cache_operation(self, inst, addr):
         hit = False
@@ -160,8 +162,8 @@ class direct_cache(cache):
 # Fully Associative
 class fully_cache(cache):
 
-    def __init__(self, ID, size = 128, line_size = 8, mem_size = 512, file = None, LSR = []):
-        super().__init__(ID, size, line_size, mem_size, file, LSR)
+    def __init__(self, ID, size = 128, line_size = 8, mem_size = 512, file = None, LSR = [], PC = 0):
+        super().__init__(ID, size, line_size, mem_size, file, LSR, PC)
 
     def cache_operation(self, inst, addr):
         e2s_key  = None
@@ -325,8 +327,8 @@ class fully_cache(cache):
 # N-way Associative
 class nway_cache(cache):
 
-    def __init__(self, ID, size = 128, line_size = 8, mem_size = 512, way = 2, file = None, LSR = []):
-        super().__init__(ID, size, line_size, mem_size, file, LSR)
+    def __init__(self, ID, size = 128, line_size = 8, mem_size = 512, way = 2, file = None, LSR = [], PC = 0):
+        super().__init__(ID, size, line_size, mem_size, file, LSR, PC)
         self.way = way
 
         if len(LSR) == 0:
