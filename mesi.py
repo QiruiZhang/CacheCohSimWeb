@@ -104,5 +104,7 @@ if __name__ == "__main__":
         dump_dict.update(i.return_cache_dict())
     json_dump("cache.json", dump_dict)
 
-    print(json.dumps(inst_dict, indent=2))
-    print(json.dumps(dump_dict, indent=2))
+    total_dict = {"inst": inst_dict, "cache": dump_dict}
+    print(json.dumps(total_dict, indent=2))
+    # print(json.dumps(inst_dict, indent=2))
+    # print(json.dumps(dump_dict, indent=2))
