@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # MESI CC Protocol
 import os.path
 import json
@@ -67,11 +68,11 @@ if __name__ == "__main__":
     # Bus operation
     bus_reply = []
     bus_info = cache_list[run_node].cache_operation(k[0], k[1])
-    #print(bus_info["bus_info"])
+    print(bus_info["bus_info"])
     for i in cache_list:
         if i.cache_ID != run_node:
             bus_reply.append(i.bus_operation(bus_info["bus_info"], k[1])["bus_reply"])
-    #print(bus_reply)
+    print(bus_reply)
 
     # Change from E to S
     if bus_info["bus_info"] == "BusRd" and True in bus_reply:
@@ -96,8 +97,8 @@ if __name__ == "__main__":
     #             cache_list[node].cache_dict[bus_info["dict_key"]]["protocol"] = "S"
 
     # Print out cache for debug
-    # for i in cache_list:
-    #     i.print_cache()
+    for i in cache_list:
+        i.print_cache()
 
     # Dump ot cache json file
     dump_dict = {}
