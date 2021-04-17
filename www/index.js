@@ -1,276 +1,127 @@
 const express = require('express');
 const path = require('path');
-let app = express();
+const app = express();
+
+app.use(express.urlencoded({
+  extended: true
+}))
+
+//const hostname = "192.168.0.109";
+//const fake_host = "0.0.0.0";
+const port = 3000;
+
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 
-inst = {
-  "reset": 0,
-  "num_cache": 2,
-  "cache_type": "d",
-  "cache_size": 128,
-  "line_size": 8,
-  "mem_size": 512,
-  "cache_way": 2,
-
-  "node_0": [
-    ["st", 66],
-    ["ld", 66]
-  ],
-
-  "node_1": [
-    ["st", 66],
-    ["ld", 66]
-  ]
-};
-
-cache = {
-  "0": {
-    "cache": {
-      "0": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "1": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "2": {
-        "addr": 66,
-        "tag": "001000",
-        "index": null,
-        "offset": "010",
-        "protocol": "I"
-      },
-      "3": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "4": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "5": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "6": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "7": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "8": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "9": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "10": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "11": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "12": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "13": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "14": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "15": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      }
-    },
-    "LSR": [
-      "2"
-    ]
-  },
-  "1": {
-    "cache": {
-      "0": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "1": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "2": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "3": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "4": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "5": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "6": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "7": {
-        "addr": 66,
-        "tag": "001000",
-        "index": null,
-        "offset": "010",
-        "protocol": "M"
-      },
-      "8": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "9": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "10": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "11": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "12": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "13": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "14": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "15": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      }
-    },
-    "LSR": [
-      "7"
-    ]
-  }
-}
-
-data = { inst: inst, cache: cache };
+var data = { inst: "", cache: "" };
 app.get('/', (req, res) => {
+  initialize_data();
   res.render('index', { data: data });
 });
 
-//add the router
-app.listen(3000,  function() {
-  console.log('Listening to port:  ' + 3000);
+
+app.post('/', (req, res) => {
+  update_inst(req.body);
+  res.render('index', { data: data });
 });
+
+app.post('/next', (req, res) => {
+  update_data();
+  res.render('index', { data: data });
+});
+
+app.post('/reset', (req, res) => {
+  res.redirect('/');
+});
+
+//add the router
+app.listen(port, function() {
+  console.log('Listening to port:  ' + port);
+});
+
+function update_inst(new_inst){
+  data.inst["reset"] = 1;
+  data.inst["cache_type"] = new_inst["cache_type"];
+  data.inst["num_cache"] = new_inst["num_cache"];
+  data.inst["cache_size"] = new_inst["cache_size"];
+  data.inst["line_size"] = new_inst["line_size"];
+  data.inst["mem_size"] = new_inst["mem_size"];
+  data.inst["cache_way"] = new_inst["cache_way"];
+}
+
+function initialize_data(){
+  inst0 = {
+    "reset": 0,
+    "num_cache": 4,
+    "cache_type": "d",
+    "cache_size": 128,
+    "line_size": 8,
+    "mem_size": 512,
+    "cache_way": 2,
+  
+    "node_0": [],
+  
+    "node_1": []
+  };
+  
+  cache0 = {};
+  for (let i = 0; i < inst0.num_cache; i++) {
+    cache0[i] = {"cache":{}};
+    let n_blocks = inst0.cache_size/inst0.line_size;
+    for (let j=0; j< n_blocks; j++) {
+      cache0[i]["cache"][j] = {
+        "addr": null,
+        "tag": null,
+        "index": null,
+        "offset": null,
+        "protocol": "I"
+      };
+    }
+    cache0[i]["LSR"] = [];
+  }
+  data = { inst: inst0, cache: cache0 };
+}
+
+function update_data(){
+  for (let i=0; i< data.inst["num_cache"];i++){
+    let n_blocks = data.inst.cache_size/data.inst.line_size;
+    let rnd_blockID = getRandomInt(n_blcoks);
+    data.cache[i]["cache"][rnd_blockID] = {
+      "addr": 66,
+      "tag": "001000",
+      "index": null,
+      "offset": "010",
+      "protocol": "M"
+    };
+    data.cache[i]["LSR"] = rnd_blockID;
+  }
+
+/*
+  inst = {
+    "reset": 0,
+    "num_cache": 2,
+    "cache_type": "d",
+    "cache_size": 128,
+    "line_size": 8,
+    "mem_size": 512,
+    "cache_way": 2,
+  
+    "node_0": [
+      ["st", 66],
+      ["ld", 66]
+    ],
+  
+    "node_1": [
+      ["st", 66],
+      ["ld", 66]
+    ]
+  };
+  */
+  
+  
+  data = { inst: inst, cache: cache };
+}
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}

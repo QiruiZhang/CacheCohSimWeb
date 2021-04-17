@@ -63,8 +63,8 @@ body
     h2 Cache Coherence Simulator
     h3 Protocal: MSI
     p M-modifed | S-shared | I-invalid
-    input(type='submit', value='Reset' style='float: right; margin-right: 2.5em; height:40px; width:50pxl; background-color: #4CAF50;' )
-    form(action='')
+    form(action='/reset' method='post')
+        input(type='submit', value='Reset' style='float: right; margin-right: 2.5em; height:40px; width:50pxl; background-color: #4CAF50;' )
     table(style="width:100px")
         tbody 
         tr
@@ -96,58 +96,99 @@ body
                             td(style="background-color:#FF0000") #{data.cache[ncol-1].cache[irow-1].addr}
                         else
                             td #{data.cache[ncol-1].cache[irow-1].addr}
-    
+            h3 Instructions
+            form(action='/code' method='post')
+                label(for='instr') 
+                textarea#instr(name='instr', rows='10')
+                br
+                input(type='hidden' name='node_id' value=ncol)
+                input(type='submit', value='Verify' style='float: right; margin-right: 0.5em;') 
+        
     .float-container
         .float-child-two-col
-            h3 Instructions
-            form(action='')
-            label(for='instr') 
-            textarea#instr(name='instr', rows='15')
-            br
-            input(type='submit', value='Verify' style='float: left; margin-right: 0.5em') 
             form(action='')
             input(type='submit', value='Step' style='float: left; margin-right: 0.5em') 
             form(action='')
             input(type='submit', value='>>' style='float: left; margin-right: 0.5em') 
         .float-child-two-col
-            -var car = 'none';
-            h3 Setting
-            form(action='')
-            label(for='cache_type') 
-                h4 Cache configuration:
-                    select#cache_type(name='cache_type')
-                        option(value='c') Custom 
-                        option(value='d') Direct
-                        option(value='f') Fully
-            label(for='num_cache') 
-                h4 Number of nodes:
-                    select#num_cache(name='num_cache')
-                        option(value='1') 1
-                        option(value='2') 2
-                        option(value='4') 4
-            label(for='cache_size') 
-                h4 Cache Size (B):
-                    select#cache_size(name='cache_size')
-                        option(value='128') 128
-                        option(value='256') 256
-                        option(value='512') 512
-            label(for='line_size') 
-                h4 Block Size (B):
-                    select#line_size(name='line_size')
-                        option(value='4') 4
-                        option(value='8') 8
-                        option(value='16') 16
-            label(for='mem_size') 
-                h4 Memory Size (B):
-                    select#mem_size(name='mem_size')
-                        option(value='512') 512
-            label(for='cache_way') 
-                h4 Number of cache way:
-                    select#cache_way(name='cache_way')
-                        option(value='2') 2
-                        option(value='4') 4
-            
-            input(type='submit' value='Set' style='float: middle;')
-            
-        
-    
+            form(action='/' method='post')
+                .float-container
+                    .float-child-two-col
+                        label(for='cache_type') 
+                            h4 Cache configuration:
+                                select#cache_type(name='cache_type')
+                                    if data.inst.cache_type == 'c'
+                                        option(value='c' selected) Custom
+                                    else
+                                        option(value='c') Custom
+                                    if data.inst.cache_type == 'd'
+                                        option(value='d' selected) Direct
+                                    else
+                                        option(value='d') Direct
+                                    if data.inst.cache_type == 'f'
+                                        option(value='f' selected) Fully
+                                    else
+                                        option(value='f') Fully
+                        label(for='num_cache') 
+                            h4 Number of nodes:
+                                select#num_cache(name='num_cache')
+                                    if data.inst.num_cache == '1'
+                                        option(value='1' selected) 1
+                                    else
+                                        option(value='1') 1
+                                    if data.inst.num_cache == '2'
+                                        option(value='2' selected) 2
+                                    else
+                                        option(value='2') 2
+                                    if data.inst.num_cache == '3'
+                                        option(value='4' selected) 4
+                                    else
+                                        option(value='4') 4
+                        label(for='cache_size') 
+                            h4 Cache Size (B):
+                                select#cache_size(name='cache_size')
+                                    if data.inst.cache_size == '128'
+                                        option(value='128' selected) 128
+                                    else
+                                        option(value='128') 128
+                                    if data.inst.cache_size == '256'
+                                        option(value='256' selected) 256
+                                    else
+                                        option(value='256') 256
+                                    if data.inst.cache_size == '512'
+                                        option(value='512' selected) 512
+                                    else
+                                        option(value='512') 512
+                    .float-child-two-col
+                        label(for='line_size') 
+                            h4 Block Size (B):
+                                select#line_size(name='line_size')
+                                    if data.inst.line_size == '8'
+                                        option(value='8' selected) 8
+                                    else
+                                        option(value='8') 8
+                                    if data.inst.line_size == '16'
+                                        option(value='16' selected) 16
+                                    else
+                                        option(value='16') 16
+                        label(for='mem_size') 
+                            h4 Memory Size (B):
+                                select#mem_size(name='mem_size')
+                                    if data.inst.mem_size == '512'
+                                        option(value='512' selected) 512
+                                    else
+                                        option(value='512') 512
+                        label(for='cache_way') 
+                            h4 Number of cache way:
+                                select#cache_way(name='cache_way')
+                                    if data.inst.cache_way = '2'
+                                        option(value='2' selected) 2
+                                    else
+                                        option(value='2') 2
+                                    if data.inst.cache_way = '4'
+                                        option(value='4' selected) 4
+                                    else
+                                        option(value='4') 4
+                //input(type='hidden' name='cur_cache' value=data.cache)
+                input(type='submit' value='Set' style='float: right; margin-right: 1em;height:40px; width:50px; background-color: lightblue;')
+
