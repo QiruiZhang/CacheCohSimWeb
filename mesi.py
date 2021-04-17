@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # MESI CC Protocol
 import os.path
 import json
@@ -15,8 +15,8 @@ def json_dump(filepath, dict):
 if __name__ == "__main__":
 
     # open inst file
-    inst_file   = open(sys.argv[1], 'r')
-    inst_dict   = json.load(inst_file)
+    inst_dict   = json.loads(sys.argv[1])
+    #inst_dict   = json.load(inst_file)
     reset       = inst_dict["reset"]
     num_cache   = inst_dict["num_cache"]
     cache_type  = inst_dict["cache_type"]
@@ -34,8 +34,8 @@ if __name__ == "__main__":
     # if len(sys.argv) == 3 and reset == 1:
     #     os.remove(sys.argv[2])
     if len(sys.argv) == 3:
-        cache_file = open(sys.argv[2], 'r')
-        cache_dict = json.load(cache_file)
+        cache_dict = json.loads(sys.argv[2])
+        #cache_dict = json.load(cache_file)
     else:
         cache_dict = None
 
