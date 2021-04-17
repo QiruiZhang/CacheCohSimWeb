@@ -58,11 +58,11 @@
         "protocol": "I"
       },
       "8": {
-        "addr": 8,
-        "tag": "00",
-        "index": 8,
+        "addr": null,
+        "tag": null,
+        "index": null,
         "offset": null,
-        "protocol": "IS_D"
+        "protocol": "I"
       },
       "9": {
         "addr": null,
@@ -115,7 +115,18 @@
       }
     },
     "LSR": [],
-    "PC": 7,
+    "PC": 0,
+    "CRHR_inst": [
+      "nop",
+      0
+    ],
+    "CRHR": false,
+    "ack_cnt": 0,
+    "ack_needed": 0,
+    "msgq_fwd": [],
+    "msgq_inv": [],
+    "msgq_resp": [],
+    "msgq_out": [],
     "log": []
   },
   "1": {
@@ -234,10 +245,19 @@
       }
     },
     "LSR": [],
-    "PC": 3,
-    "log": [
-      "End of node_1 program!"
-    ]
+    "PC": 0,
+    "CRHR_inst": [
+      "nop",
+      0
+    ],
+    "CRHR": false,
+    "ack_cnt": 0,
+    "ack_needed": 0,
+    "msgq_fwd": [],
+    "msgq_inv": [],
+    "msgq_resp": [],
+    "msgq_out": [],
+    "log": []
   },
   "2": {
     "cache": {
@@ -355,10 +375,19 @@
       }
     },
     "LSR": [],
-    "PC": 2,
-    "log": [
-      "End of node_2 program!"
-    ]
+    "PC": 0,
+    "CRHR_inst": [
+      "nop",
+      0
+    ],
+    "CRHR": false,
+    "ack_cnt": 0,
+    "ack_needed": 0,
+    "msgq_fwd": [],
+    "msgq_inv": [],
+    "msgq_resp": [],
+    "msgq_out": [],
+    "log": []
   },
   "3": {
     "cache": {
@@ -426,7 +455,7 @@
         "protocol": "I"
       },
       "9": {
-        "addr": 9,
+        "addr": 77,
         "tag": "00",
         "index": 9,
         "offset": null,
@@ -477,6 +506,17 @@
     },
     "LSR": [],
     "PC": 3,
+    "CRHR_inst": [
+      "ld",
+      77
+    ],
+    "CRHR": false,
+    "ack_cnt": 0,
+    "ack_needed": 0,
+    "msgq_fwd": [],
+    "msgq_inv": [],
+    "msgq_resp": [],
+    "msgq_out": [],
     "log": [
       "End of node_3 program!"
     ]
@@ -548,17 +588,15 @@
         "ack_cnt": 0
       },
       "8": {
-        "addr": 8,
-        "protocol": "S",
+        "addr": null,
+        "protocol": "I",
         "owner": null,
-        "sharers": [
-          "node_0"
-        ],
+        "sharers": [],
         "ack_needed": 0,
         "ack_cnt": 0
       },
       "9": {
-        "addr": 9,
+        "addr": 77,
         "protocol": "M",
         "owner": "node_3",
         "sharers": [],
@@ -998,12 +1036,11 @@
         "ack_cnt": 0
       }
     },
-    "log": [
-      "Directory State Transition: I->S @ dir-block-8!"
-    ]
+    "msgq_req": [],
+    "msgq_resp": [],
+    "msgq_out": [],
+    "log": []
   },
-  "msg": [
-    "Message Transaction: dir sent Data-FD (ack = 0) to node_0 for dir-block-8"
-  ],
-  "cycle": 43
+  "msg": [],
+  "cycle": 8
 }

@@ -5,15 +5,15 @@ import math
 class dir_node():
     def __init__(self, protocol = 'MSI', line_size = 8, mem_size = 512, print_flag = True):
         self.protocol = protocol # Protocol type: MSI, MESI or MOSI
-
         self.mem_size = mem_size # Bytes
         self.mem_line_size = line_size #Bytes
-        self.dir_dict = {}
         self.dir_num_line = int(self.mem_size/self.mem_line_size)
+        self.print_flag = print_flag
 
+        self.dir_dict = {}
         for i in range(self.dir_num_line):
             self.dir_dict[str(i)] = {
-                "addr": None, # directory block index, decimal
+                "addr": None,
                 "protocol": "I",
                 "owner": None,
                 "sharers": [],
@@ -21,17 +21,14 @@ class dir_node():
                 "ack_cnt": 0
             }
 
-
-        self.print_flag = print_flag
-
         self.msgq_req = [] # Input msg queue/channel for requests
         self.msgq_resp = [] # Input msg queue/channel for responses
-    
         self.msgq_out = [] # Output msg queue. Multiple output messages may be generated within a logical cycle
         self.msg_out = {
             "type": "None",
             "ack": 0, # Used only when type is Data-FD (Data from Directory)
             "dirblk": 0, # Cache block index in directory
+            "addr": 0,
             "src": "dir",
             "dst": "node_0",
             "req": None
@@ -63,7 +60,7 @@ class dir_node():
         # Reset dict
         for i in range(self.dir_num_line):
             self.dir_dict[str(i)] = {
-                "addr": None, # directory block index, decimal
+                "addr": None,
                 "protocol": "I",
                 "owner": None,
                 "sharers": [],
@@ -84,9 +81,11 @@ class dir_node():
         binary = bin(num)[2:].zfill(bits)
         return binary
 
+    '''
     def print_dir(self):
         for key, val in self.dir_dict.items():
             print(f"line[{key}] = {val}")
+    '''
 
     def return_dir_dict(self):
         return {"dir": self.dir_dict}
@@ -129,6 +128,7 @@ class dir_node():
                         "type": "Data-FD",
                         "ack": 0,
                         "dirblk": head_msg["dirblk"],
+                        "addr": head_msg["addr"],
                         "src": "dir",
                         "dst": head_msg["src"],
                         "req": None
@@ -136,7 +136,7 @@ class dir_node():
                     self.msgq_out.append(self.msg_out)
                     
                     # Update Directory State
-                    dir_line["addr"] = head_msg["dirblk"]
+                    dir_line["addr"] = head_msg["addr"]
                     dir_line["sharers"].append(head_msg["src"])
                     dir_line["protocol"] = "S"
                     
@@ -155,6 +155,7 @@ class dir_node():
                         "type": "Data-FD",
                         "ack": 0,
                         "dirblk": head_msg["dirblk"],
+                        "addr": head_msg["addr"],
                         "src": "dir",
                         "dst": head_msg["src"],
                         "req": None
@@ -162,7 +163,7 @@ class dir_node():
                     self.msgq_out.append(self.msg_out)
                     
                     # Update Directory State
-                    dir_line["addr"] = head_msg["dirblk"]
+                    dir_line["addr"] = head_msg["addr"]
                     dir_line["owner"] = head_msg["src"]
                     dir_line["protocol"] = "M"
 
@@ -181,6 +182,7 @@ class dir_node():
                         "type": "Put-Ack",
                         "ack": 0,
                         "dirblk": head_msg["dirblk"],
+                        "addr": head_msg["addr"],
                         "src": "dir",
                         "dst": head_msg["src"],
                         "req": None
@@ -196,6 +198,7 @@ class dir_node():
                         "type": "Put-Ack",
                         "ack": 0,
                         "dirblk": head_msg["dirblk"],
+                        "addr": head_msg["addr"],
                         "src": "dir",
                         "dst": head_msg["src"],
                         "req": None
@@ -216,6 +219,7 @@ class dir_node():
                         "type": "Data-FD",
                         "ack": 0,
                         "dirblk": head_msg["dirblk"],
+                        "addr": head_msg["addr"],
                         "src": "dir",
                         "dst": head_msg["src"],
                         "req": None
@@ -223,6 +227,7 @@ class dir_node():
                     self.msgq_out.append(self.msg_out)
                     
                     # Update Directory State
+                    dir_line["addr"] = head_msg["addr"]
                     dir_line["sharers"].append(head_msg["src"])
 
                     # Pop input queue
@@ -234,6 +239,7 @@ class dir_node():
                         "type": "Data-FD",
                         "ack": scnt - scnt_deduct,
                         "dirblk": head_msg["dirblk"],
+                        "addr": head_msg["addr"],
                         "src": "dir",
                         "dst": head_msg["src"],
                         "req": None
@@ -247,6 +253,7 @@ class dir_node():
                                 "type": "Inv",
                                 "ack": 0,
                                 "dirblk": head_msg["dirblk"],
+                                "addr": head_msg["addr"],
                                 "src": "dir",
                                 "dst": dst,
                                 "req": head_msg["src"]
@@ -255,6 +262,7 @@ class dir_node():
 
                     # Update Directory State
                     if ((scnt == 1) and (head_msg["src"] in dir_line["sharers"])):
+                        dir_line["addr"] = head_msg["addr"]
                         dir_line["sharers"] = []
                         dir_line["owner"] = head_msg["src"]
                         dir_line["protocol"] = "M"
@@ -265,6 +273,7 @@ class dir_node():
                         if self.print_flag:
                             print(log)
                     else:
+                        dir_line["addr"] = head_msg["addr"]
                         dir_line["sharers"] = []
                         dir_line["owner"] = head_msg["src"]
                         dir_line["ack_needed"] = scnt - scnt_deduct
@@ -286,6 +295,7 @@ class dir_node():
                         "type": "Put-Ack",
                         "ack": 0,
                         "dirblk": head_msg["dirblk"],
+                        "addr": head_msg["addr"],
                         "src": "dir",
                         "dst": head_msg["src"],
                         "req": None
@@ -304,6 +314,7 @@ class dir_node():
                         if self.print_flag:
                             print(log)
                     else:
+                        dir_line["addr"] = head_msg["addr"]
                         dir_line["sharers"].remove(head_msg["src"])
 
                     # Pop input queue
@@ -315,6 +326,7 @@ class dir_node():
                         "type": "Put-Ack",
                         "ack": 0,
                         "dirblk": head_msg["dirblk"],
+                        "addr": head_msg["addr"],
                         "src": "dir",
                         "dst": head_msg["src"],
                         "req": None
@@ -333,6 +345,7 @@ class dir_node():
                         if self.print_flag:
                             print(log)
                     else:
+                        dir_line["addr"] = head_msg["addr"]
                         dir_line["sharers"].remove(head_msg["src"])
 
                     # Pop input queue
@@ -349,6 +362,7 @@ class dir_node():
                         "type": "Fwd-GetS",
                         "ack": 0,
                         "dirblk": head_msg["dirblk"],
+                        "addr": head_msg["addr"],
                         "src": "dir",
                         "dst": dir_line["owner"],
                         "req": head_msg["src"]
@@ -356,6 +370,7 @@ class dir_node():
                     self.msgq_out.append(self.msg_out)
                     
                     # Update Directory State
+                    dir_line["addr"] = head_msg["addr"]
                     dir_line["sharers"].append(head_msg["src"])
                     dir_line["sharers"].append(dir_line["owner"])
                     dir_line["owner"] = None
@@ -376,6 +391,7 @@ class dir_node():
                         "type": "Fwd-GetM",
                         "ack": 0,
                         "dirblk": head_msg["dirblk"],
+                        "addr": head_msg["addr"],
                         "src": "dir",
                         "dst": dir_line["owner"],
                         "req": head_msg["src"]
@@ -383,6 +399,7 @@ class dir_node():
                     self.msgq_out.append(self.msg_out)
                     
                     # Update Directory State
+                    dir_line["addr"] = head_msg["addr"]
                     dir_line["owner"] = head_msg["src"]
                     dir_line["protocol"] = "MM_A"
 
@@ -401,6 +418,7 @@ class dir_node():
                         "type": "Put-Ack",
                         "ack": 0,
                         "dirblk": head_msg["dirblk"],
+                        "addr": head_msg["addr"],
                         "src": "dir",
                         "dst": head_msg["src"],
                         "req": None
@@ -416,6 +434,7 @@ class dir_node():
                         "type": "Put-Ack",
                         "ack": 0,
                         "dirblk": head_msg["dirblk"],
+                        "addr": head_msg["addr"],
                         "src": "dir",
                         "dst": head_msg["src"],
                         "req": None
@@ -446,6 +465,7 @@ class dir_node():
                         "type": "Put-Ack",
                         "ack": 0,
                         "dirblk": head_msg["dirblk"],
+                        "addr": head_msg["addr"],
                         "src": "dir",
                         "dst": head_msg["src"],
                         "req": None

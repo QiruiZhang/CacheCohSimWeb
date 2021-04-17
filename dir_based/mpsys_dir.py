@@ -4,15 +4,14 @@ import proc_node as pn
 
 class mpsys_dir():
     def __init__(self, inst_dict, print_flag = True):
-        self.protocol = inst_dict["protocol"]
+        self.protocol = "MSI"
         self.num_proc = inst_dict["num_cache"]
         self.line_size = inst_dict["line_size"]
         self.cache_size = inst_dict["cache_size"]
         self.mem_size = inst_dict["mem_size"]
-
         self.cache_type = inst_dict["cache_type"]
         self.cache_way = inst_dict["cache_way"]
-
+        self.run_node = inst_dict["run_node"]
         self.print_flag = print_flag
 
         # Initialize Nodes
@@ -24,6 +23,7 @@ class mpsys_dir():
             )
 
         self.msg_log = []
+        self.cycle = 0
 
     # Reset PCs and dicts to default values
     def reset(self):
@@ -34,31 +34,68 @@ class mpsys_dir():
         for i in range(0, self.num_proc):
             self.proc_nodes[i].proc_reset()
 
+        # Reset Log and cycle
+        self.msg_log = []
+        self.cycle = 0
+
     # Update Nodes with input dicts from cache.json
     def update_dict(self, cache_dict):
         # Update Directory Dict
         self.dir_node.dir_dict = cache_dict["dir"]["dict"]
+        # Update Directory Internal States
+        self.dir_node.msgq_req = cache_dict["dir"]["msgq_req"]
+        self.dir_node.msgq_resp = cache_dict["dir"]["msgq_resp"]
+        self.dir_node.msgq_out = cache_dict["dir"]["msgq_out"]
 
-        # Update Processor Dicts
         for i in range(0, self.num_proc):
+            # Update Processor Dicts
             self.proc_nodes[i].cache_dict = cache_dict[str(i)]["cache"]
-    
+            # Update Processor Internal States
+            self.proc_nodes[i].line_queue = cache_dict[str(i)]["LSR"]
+            self.proc_nodes[i].PC = cache_dict[str(i)]["PC"]
+            self.proc_nodes[i].CRHR_inst = cache_dict[str(i)]["CRHR_inst"]
+            self.proc_nodes[i].CRHR = cache_dict[str(i)]["CRHR"]
+            self.proc_nodes[i].ack_cnt = cache_dict[str(i)]["ack_cnt"]
+            self.proc_nodes[i].ack_needed = cache_dict[str(i)]["ack_needed"]
+            self.proc_nodes[i].msgq_fwd = cache_dict[str(i)]["msgq_fwd"]
+            self.proc_nodes[i].msgq_inv = cache_dict[str(i)]["msgq_inv"]
+            self.proc_nodes[i].msgq_resp = cache_dict[str(i)]["msgq_resp"]
+            self.proc_nodes[i].msgq_out = cache_dict[str(i)]["msgq_out"]
+
+        self.cycle = cache_dict["cycle"]
+
     # Output data into cache.json
     def output_dict(self):
         cache_dict = {}
         # Add Processor Node Data
         for i in range(0, self.num_proc):
-            cache_dict[str(i)] = self.proc_nodes[i].return_cache_dict()[str(i)]
+            cache_dict[str(i)] = {}
+            cache_dict[str(i)]["cache"] = self.proc_nodes[i].cache_dict
+            cache_dict[str(i)]["LSR"] = self.proc_nodes[i].line_queue
             cache_dict[str(i)]["PC"] = self.proc_nodes[i].PC
+            cache_dict[str(i)]["CRHR_inst"] = self.proc_nodes[i].CRHR_inst
+            cache_dict[str(i)]["CRHR"] = self.proc_nodes[i].CRHR
+            cache_dict[str(i)]["ack_cnt"] = self.proc_nodes[i].ack_cnt
+            cache_dict[str(i)]["ack_needed"] = self.proc_nodes[i].ack_needed
+            cache_dict[str(i)]["msgq_fwd"] = self.proc_nodes[i].msgq_fwd
+            cache_dict[str(i)]["msgq_inv"] = self.proc_nodes[i].msgq_inv
+            cache_dict[str(i)]["msgq_resp"] = self.proc_nodes[i].msgq_resp
+            cache_dict[str(i)]["msgq_out"] = self.proc_nodes[i].msgq_out
             cache_dict[str(i)]["log"] = self.proc_nodes[i].node_log
 
         # Add Directory Data
         cache_dict["dir"] = {}
-        cache_dict["dir"]["dict"] = self.dir_node.return_dir_dict()["dir"]
+        cache_dict["dir"]["dict"] = self.dir_node.dir_dict
+        cache_dict["dir"]["msgq_req"] = self.dir_node.msgq_req
+        cache_dict["dir"]["msgq_resp"] = self.dir_node.msgq_resp
+        cache_dict["dir"]["msgq_out"] = self.dir_node.msgq_out
         cache_dict["dir"]["log"] = self.dir_node.dir_log
 
         # Add Interconnect Message log
         cache_dict["msg"] = self.msg_log
+
+        # Add cycle
+        cache_dict["cycle"] = self.cycle
 
         return cache_dict
 
@@ -71,27 +108,27 @@ class mpsys_dir():
         log = "Message Transaction: " + msg["src"] + " sent " + msg["type"]
         if msg["type"] == "Data-FD":
             log += " (ack = " + str(msg["ack"]) + ")" 
-        log += " to " + msg["dst"] + " for dir-block-" + str(msg["dirblk"])
+        log += " to " + msg["dst"] + " for addr-" + str(msg["addr"]) + " => dir-block-" + str(msg["dirblk"])
         if msg["req"] != None:
-            log += " requested by " + msg["req"]
+            log += ", requested by " + msg["req"]
 
         self.msg_log.append(log)
         if (self.print_flag):
             print(log)
 
     # Toggle Clock of Multi-Processor System by one cycle
-    def run_cycle(self, proc_sel):
+    def run_cycle(self):
         '''
         Run Processors
-        proc_sel:
+        self.run_node:
             "all": run all processors concurrently
-            "0" ~ str(num_proc-1): run only self.proc_nodes[int(proc_sel)] 
+            0 ~ num_proc-1: run only self.proc_nodes[self.run_node] 
         '''
-        if proc_sel == "all":
+        if self.run_node == "all":
             for i in range(0, self.num_proc):
                 self.proc_nodes[i].proc_run()
         else:
-            self.proc_nodes[int(proc_sel)].proc_run()
+            self.proc_nodes[self.run_node].proc_run()
 
         # Run Directory
         self.dir_node.dir_run()
@@ -106,6 +143,9 @@ class mpsys_dir():
         for i in range(0, len(self.dir_node.msgq_out)):
             msg = self.dir_node.output_msg()
             self.send_msg(msg)
+
+        # Update cycle
+        self.cycle += 1
 
 
     

@@ -15,7 +15,7 @@ class cache():
 
         if file == None:
             for i in range(self.cache_num_line):
-                self.cache_dict[str(i)] = {"addr": None, # directory block index, decimal
+                self.cache_dict[str(i)] = {"addr": None,
                                            "tag": None, # binary tag
                                            "index": None, # local cache block index, decimal
                                            "offset": None, # not used
@@ -27,10 +27,12 @@ class cache():
     def decimal2binary(self, num, bits):
         binary = bin(num)[2:].zfill(bits)
         return binary
-
+    
+    '''
     def print_cache(self):
         for key, val in self.cache_dict.items():
             print(f"line[{key}] = {val}")
+    '''
 
     def return_cache_dict(self):
         return {self.cache_ID: {"cache": self.cache_dict, "LSR": self.line_queue}}
@@ -40,13 +42,11 @@ class proc_node(cache):
     # Object initialization
     def __init__(self, ID, inst = [], protocol = 'MSI', size = 128, line_size = 8, mem_size = 512, LSR = [], print_flag = True):
         super().__init__(str(ID), size, line_size, mem_size, None, LSR) # Inheritance
-        
         self.print_flag = print_flag
-        
         self.insts = inst # Input instructions from user
         self.protocol = protocol # Protocol type: MSI, MESI or MOSI
-        self.PC = 0 # PC is only accumulated when processor is not stalled
-                
+
+        self.PC = 0 # PC is only accumulated when processor is not stalled        
         self.CRHR_inst = ["nop", 0]
         self.CRHR = False # Coherence Request Handling Register
         self.ack_cnt = 0
@@ -55,12 +55,12 @@ class proc_node(cache):
         self.msgq_fwd = [] # Input msg queue/channel for forwarded msgs
         self.msgq_inv = [] # Input msg queue/channel for invalidations
         self.msgq_resp = [] # Input msg queue/channel for other msgs
-    
         self.msgq_out = [] # Output msg queue. Multiple output messages may be generated within a logical cycle
         self.msg_out = {
             "type": "None",
             "ack": 0, # Used only when type is Data-FD (Data from Directory)
             "dirblk": 0, # Cache block index in directory
+            "addr": 0, # Addr from instructions
             "src": "node_" + str(ID),
             "dst": "dir",
             "req": None
@@ -93,7 +93,7 @@ class proc_node(cache):
         # Reset dict
         for i in range(self.cache_num_line):
             self.cache_dict[str(i)] = {
-                "addr": None, # directory block index, decimal
+                "addr": None,
                 "tag": None, # binary tag
                 "index": None, # local cache block index, decimal
                 "offset": None, # not used
@@ -193,6 +193,7 @@ class proc_node(cache):
                         "type": "GetS",
                         "ack": 0,
                         "dirblk": DirInd_dec,
+                        "addr": addr,
                         "src": "node_" + str(self.cache_ID),
                         "dst": "dir",
                         "req": "node_" + str(self.cache_ID)
@@ -201,7 +202,7 @@ class proc_node(cache):
 
                     # update cache line
                     self.cache_dict[str(index_dec)]["protocol"] = "IS_D"
-                    self.cache_dict[str(index_dec)]["addr"] = DirInd_dec
+                    self.cache_dict[str(index_dec)]["addr"] = addr
                     self.cache_dict[str(index_dec)]["tag"] = tag
                     self.cache_dict[str(index_dec)]["index"] = index_dec
                     self.cache_dict[str(index_dec)]["offset"] = None
@@ -221,6 +222,7 @@ class proc_node(cache):
                         "type": "GetM",
                         "ack": 0,
                         "dirblk": DirInd_dec,
+                        "addr": addr,
                         "src": "node_" + str(self.cache_ID),
                         "dst": "dir",
                         "req": "node_" + str(self.cache_ID)
@@ -229,7 +231,7 @@ class proc_node(cache):
 
                     # update cache line
                     self.cache_dict[str(index_dec)]["protocol"] = "IM_AD"
-                    self.cache_dict[str(index_dec)]["addr"] = DirInd_dec
+                    self.cache_dict[str(index_dec)]["addr"] = addr
                     self.cache_dict[str(index_dec)]["tag"] = tag
                     self.cache_dict[str(index_dec)]["index"] = index_dec
                     self.cache_dict[str(index_dec)]["offset"] = None
@@ -246,6 +248,7 @@ class proc_node(cache):
             # State: S
             elif cache_line["protocol"] == "S":
                 if op == "ld":
+                    self.cache_dict[str(index_dec)]["addr"] = addr
                     # Update log
                     log = "Processor node_" + str(self.cache_ID) + " Cache Hit: Load @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!"
                     self.node_log.append(log)
@@ -260,6 +263,7 @@ class proc_node(cache):
                         "type": "GetM",
                         "ack": 0,
                         "dirblk": DirInd_dec,
+                        "addr": addr,
                         "src": "node_" + str(self.cache_ID),
                         "dst": "dir",
                         "req": "node_" + str(self.cache_ID)
@@ -268,7 +272,7 @@ class proc_node(cache):
                     
                     # update cache line
                     self.cache_dict[str(index_dec)]["protocol"] = "SM_AD"
-                    self.cache_dict[str(index_dec)]["addr"] = DirInd_dec
+                    self.cache_dict[str(index_dec)]["addr"] = addr
                     self.cache_dict[str(index_dec)]["tag"] = tag
                     self.cache_dict[str(index_dec)]["index"] = index_dec
                     self.cache_dict[str(index_dec)]["offset"] = None
@@ -288,6 +292,7 @@ class proc_node(cache):
                         "type": "PutS",
                         "ack": 0,
                         "dirblk": DirInd_dec,
+                        "addr": addr,
                         "src": "node_" + str(self.cache_ID),
                         "dst": "dir",
                         "req": None
@@ -295,6 +300,7 @@ class proc_node(cache):
                     self.msgq_out.append(self.msg_out)
                     
                     # update cache line
+                    self.cache_dict[str(index_dec)]["addr"] = addr
                     self.cache_dict[str(index_dec)]["protocol"] = "SI_A"
 
                     # Update log
@@ -309,6 +315,7 @@ class proc_node(cache):
             # State: SM_AD
             elif cache_line["protocol"] == "SM_AD":
                 if op == "ld":
+                    self.cache_dict[str(index_dec)]["addr"] = addr
                     # Update log
                     log = "Processor node_" + str(self.cache_ID) + " Cache Hit: Load @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!"
                     self.node_log.append(log)
@@ -320,6 +327,7 @@ class proc_node(cache):
             # State: SM_A
             elif cache_line["protocol"] == "SM_A":
                 if op == "ld":
+                    self.cache_dict[str(index_dec)]["addr"] = addr
                     # Update log
                     log = "Processor node_" + str(self.cache_ID) + " Cache Hit: Load @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!"
                     self.node_log.append(log)
@@ -331,6 +339,7 @@ class proc_node(cache):
             # State: M
             elif cache_line["protocol"] == "M":
                 if op == "ld":
+                    self.cache_dict[str(index_dec)]["addr"] = addr
                     # Update log
                     log = "Processor node_" + str(self.cache_ID) + " Cache Hit: Load @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!"
                     self.node_log.append(log)
@@ -340,6 +349,7 @@ class proc_node(cache):
                     # Update CRHR
                     inst_processed = True
                 elif op == "st":
+                    self.cache_dict[str(index_dec)]["addr"] = addr
                     # Update log
                     log = "Processor node_" + str(self.cache_ID) + " Cache Hit: Store @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!"
                     self.node_log.append(log)
@@ -354,6 +364,7 @@ class proc_node(cache):
                         "type": "PutM",
                         "ack": 0,
                         "dirblk": DirInd_dec,
+                        "addr": addr,
                         "src": "node_" + str(self.cache_ID),
                         "dst": "dir",
                         "req": None
@@ -361,6 +372,7 @@ class proc_node(cache):
                     self.msgq_out.append(self.msg_out)
                     
                     # update cache line
+                    self.cache_dict[str(index_dec)]["addr"] = addr
                     self.cache_dict[str(index_dec)]["protocol"] = "MI_A"
                     
                     # Update log
@@ -391,6 +403,7 @@ class proc_node(cache):
                         "type": "Data-FO",
                         "ack": 0,
                         "dirblk": DirInd_dec,
+                        "addr": head_msg["addr"],
                         "src": "node_" + str(self.cache_ID),
                         "dst": head_msg["req"],
                         "req": None
@@ -401,6 +414,7 @@ class proc_node(cache):
                         "type": "Data-TD",
                         "ack": 0,
                         "dirblk": DirInd_dec,
+                        "addr": head_msg["addr"],
                         "src": "node_" + str(self.cache_ID),
                         "dst": "dir",
                         "req": None
@@ -425,6 +439,7 @@ class proc_node(cache):
                         "type": "Data-FO",
                         "ack": 0,
                         "dirblk": DirInd_dec,
+                        "addr": head_msg["addr"],
                         "src": "node_" + str(self.cache_ID),
                         "dst": head_msg["req"],
                         "req": None
@@ -435,6 +450,7 @@ class proc_node(cache):
                         "type": "Fwd-Ack",
                         "ack": 0,
                         "dirblk": DirInd_dec,
+                        "addr": head_msg["addr"],
                         "src": "node_" + str(self.cache_ID),
                         "dst": "dir",
                         "req": None
@@ -465,6 +481,7 @@ class proc_node(cache):
                         "type": "Data-FO",
                         "ack": 0,
                         "dirblk": DirInd_dec,
+                        "addr": head_msg["addr"],
                         "src": "node_" + str(self.cache_ID),
                         "dst": head_msg["req"],
                         "req": None
@@ -475,6 +492,7 @@ class proc_node(cache):
                         "type": "Data-TD",
                         "ack": 0,
                         "dirblk": DirInd_dec,
+                        "addr": head_msg["addr"],
                         "src": "node_" + str(self.cache_ID),
                         "dst": "dir",
                         "req": None
@@ -499,6 +517,7 @@ class proc_node(cache):
                         "type": "Data-FO",
                         "ack": 0,
                         "dirblk": DirInd_dec,
+                        "addr": head_msg["addr"],
                         "src": "node_" + str(self.cache_ID),
                         "dst": head_msg["req"],
                         "req": None
@@ -509,6 +528,7 @@ class proc_node(cache):
                         "type": "Fwd-Ack",
                         "ack": 0,
                         "dirblk": DirInd_dec,
+                        "addr": head_msg["addr"],
                         "src": "node_" + str(self.cache_ID),
                         "dst": "dir",
                         "req": None
@@ -545,6 +565,7 @@ class proc_node(cache):
                     "type": "Inv-Ack",
                     "ack": 0,
                     "dirblk": DirInd_dec,
+                    "addr": head_msg["addr"],
                     "src": "node_" + str(self.cache_ID),
                     "dst": head_msg["req"],
                     "req": None
@@ -555,6 +576,7 @@ class proc_node(cache):
                     "type": "Inv-Ack",
                     "ack": 0,
                     "dirblk": DirInd_dec,
+                    "addr": head_msg["addr"],
                     "src": "node_" + str(self.cache_ID),
                     "dst": "dir",
                     "req": None
@@ -584,6 +606,7 @@ class proc_node(cache):
                     "type": "Inv-Ack",
                     "ack": 0,
                     "dirblk": DirInd_dec,
+                    "addr": head_msg["addr"],
                     "src": "node_" + str(self.cache_ID),
                     "dst": head_msg["req"],
                     "req": None
@@ -594,6 +617,7 @@ class proc_node(cache):
                     "type": "Inv-Ack",
                     "ack": 0,
                     "dirblk": DirInd_dec,
+                    "addr": head_msg["addr"],
                     "src": "node_" + str(self.cache_ID),
                     "dst": "dir",
                     "req": None
@@ -619,6 +643,7 @@ class proc_node(cache):
                     "type": "Inv-Ack",
                     "ack": 0,
                     "dirblk": DirInd_dec,
+                    "addr": head_msg["addr"],
                     "src": "node_" + str(self.cache_ID),
                     "dst": head_msg["req"],
                     "req": None
@@ -629,6 +654,7 @@ class proc_node(cache):
                     "type": "Inv-Ack",
                     "ack": 0,
                     "dirblk": DirInd_dec,
+                    "addr": head_msg["addr"],
                     "src": "node_" + str(self.cache_ID),
                     "dst": "dir",
                     "req": None
