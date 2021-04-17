@@ -1,1046 +1,1046 @@
 {
-  "0": {
-    "cache": {
-      "0": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "1": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "2": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "3": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "4": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "5": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "6": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "7": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "8": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "9": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "10": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "11": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "12": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "13": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "14": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "15": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      }
-    },
-    "LSR": [],
-    "PC": 0,
-    "CRHR_inst": [
-      "nop",
-      0
-    ],
-    "CRHR": false,
-    "ack_cnt": 0,
-    "ack_needed": 0,
-    "msgq_fwd": [],
-    "msgq_inv": [],
-    "msgq_resp": [],
-    "msgq_out": [],
-    "log": []
-  },
-  "1": {
-    "cache": {
-      "0": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "1": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "2": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "3": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "4": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "5": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "6": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "7": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "8": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "9": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "10": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "11": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "12": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "13": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "14": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "15": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      }
-    },
-    "LSR": [],
-    "PC": 0,
-    "CRHR_inst": [
-      "nop",
-      0
-    ],
-    "CRHR": false,
-    "ack_cnt": 0,
-    "ack_needed": 0,
-    "msgq_fwd": [],
-    "msgq_inv": [],
-    "msgq_resp": [],
-    "msgq_out": [],
-    "log": []
-  },
   "2": {
-    "cache": {
-      "0": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "1": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "2": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "3": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "4": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "5": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "6": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "7": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "8": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "9": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "10": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "11": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "12": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "13": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "14": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "15": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      }
-    },
-    "LSR": [],
-    "PC": 0,
+    "ack_needed": 0,
+    "log": [],
     "CRHR_inst": [
       "nop",
       0
     ],
-    "CRHR": false,
     "ack_cnt": 0,
-    "ack_needed": 0,
-    "msgq_fwd": [],
-    "msgq_inv": [],
-    "msgq_resp": [],
-    "msgq_out": [],
-    "log": []
-  },
-  "3": {
     "cache": {
-      "0": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "1": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
       "2": {
-        "addr": null,
         "tag": null,
-        "index": null,
         "offset": null,
-        "protocol": "I"
-      },
-      "3": {
         "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
+        "protocol": "I",
+        "index": null
       },
       "4": {
-        "addr": null,
         "tag": null,
-        "index": null,
         "offset": null,
-        "protocol": "I"
+        "addr": null,
+        "protocol": "I",
+        "index": null
       },
-      "5": {
-        "addr": null,
+      "0": {
         "tag": null,
-        "index": null,
         "offset": null,
-        "protocol": "I"
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "3": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
       },
       "6": {
-        "addr": null,
         "tag": null,
-        "index": null,
         "offset": null,
-        "protocol": "I"
-      },
-      "7": {
         "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "8": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "9": {
-        "addr": 77,
-        "tag": "00",
-        "index": 9,
-        "offset": null,
-        "protocol": "M"
-      },
-      "10": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
+        "protocol": "I",
+        "index": null
       },
       "11": {
-        "addr": null,
         "tag": null,
-        "index": null,
         "offset": null,
-        "protocol": "I"
-      },
-      "12": {
         "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "13": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
-      },
-      "14": {
-        "addr": null,
-        "tag": null,
-        "index": null,
-        "offset": null,
-        "protocol": "I"
+        "protocol": "I",
+        "index": null
       },
       "15": {
-        "addr": null,
         "tag": null,
-        "index": null,
         "offset": null,
-        "protocol": "I"
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "12": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "13": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "14": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "5": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "9": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "7": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "8": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "10": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "1": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
       }
     },
-    "LSR": [],
-    "PC": 3,
-    "CRHR_inst": [
-      "ld",
-      77
-    ],
-    "CRHR": false,
-    "ack_cnt": 0,
-    "ack_needed": 0,
-    "msgq_fwd": [],
     "msgq_inv": [],
+    "CRHR": false,
     "msgq_resp": [],
+    "msgq_fwd": [],
     "msgq_out": [],
-    "log": [
-      "End of node_3 program!"
-    ]
+    "LSR": [],
+    "PC": 0
   },
   "dir": {
     "dict": {
-      "0": {
+      "43": {
+        "ack_needed": 0,
         "addr": null,
-        "protocol": "I",
         "owner": null,
+        "ack_cnt": 0,
         "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "1": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "2": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "3": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "4": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "5": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "6": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "7": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "8": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "9": {
-        "addr": 77,
-        "protocol": "M",
-        "owner": "node_3",
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "10": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "11": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "12": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "13": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "14": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "15": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "16": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "17": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "18": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "19": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "20": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "21": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "22": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "23": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "24": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "25": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "26": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "27": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "28": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "29": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "30": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "31": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "32": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "33": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "34": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "35": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "36": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "37": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "38": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "39": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "40": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
+        "protocol": "I"
       },
       "41": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
         "ack_needed": 0,
-        "ack_cnt": 0
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
       },
-      "42": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
+      "18": {
         "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "43": {
         "addr": null,
-        "protocol": "I",
         "owner": null,
+        "ack_cnt": 0,
         "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "44": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "45": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
+        "protocol": "I"
       },
       "46": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
         "ack_needed": 0,
-        "ack_cnt": 0
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
       },
-      "47": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
+      "20": {
         "ack_needed": 0,
-        "ack_cnt": 0
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
       },
-      "48": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
+      "12": {
         "ack_needed": 0,
-        "ack_cnt": 0
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
       },
-      "49": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
+      "31": {
         "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "50": {
         "addr": null,
-        "protocol": "I",
         "owner": null,
+        "ack_cnt": 0,
         "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "51": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "52": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "53": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "54": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "55": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "56": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
+        "protocol": "I"
       },
       "57": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
         "ack_needed": 0,
-        "ack_cnt": 0
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "30": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "5": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "32": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
       },
       "58": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
         "ack_needed": 0,
-        "ack_cnt": 0
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
       },
-      "59": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
+      "54": {
         "ack_needed": 0,
-        "ack_cnt": 0
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
       },
-      "60": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
+      "50": {
         "ack_needed": 0,
-        "ack_cnt": 0
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
       },
-      "61": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
+      "47": {
         "ack_needed": 0,
-        "ack_cnt": 0
-      },
-      "62": {
         "addr": null,
-        "protocol": "I",
         "owner": null,
+        "ack_cnt": 0,
         "sharers": [],
-        "ack_needed": 0,
-        "ack_cnt": 0
+        "protocol": "I"
       },
       "63": {
-        "addr": null,
-        "protocol": "I",
-        "owner": null,
-        "sharers": [],
         "ack_needed": 0,
-        "ack_cnt": 0
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "21": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "36": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "8": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "27": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "60": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "6": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "52": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "13": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "25": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "17": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "55": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "61": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "51": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "62": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "2": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "49": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "44": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "37": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "26": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "0": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "35": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "15": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "38": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "53": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "24": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "39": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "9": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "40": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "42": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "22": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "29": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "16": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "48": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "19": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "59": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "45": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "56": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "33": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "4": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "3": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "11": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "23": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "10": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "14": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "1": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "7": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "34": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
+      },
+      "28": {
+        "ack_needed": 0,
+        "addr": null,
+        "owner": null,
+        "ack_cnt": 0,
+        "sharers": [],
+        "protocol": "I"
       }
     },
     "msgq_req": [],
+    "log": [],
     "msgq_resp": [],
-    "msgq_out": [],
-    "log": []
+    "msgq_out": []
   },
   "msg": [],
-  "cycle": 8
+  "1": {
+    "ack_needed": 0,
+    "log": [],
+    "CRHR_inst": [
+      "nop",
+      0
+    ],
+    "ack_cnt": 0,
+    "cache": {
+      "2": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "4": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "0": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "3": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "6": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "11": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "15": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "12": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "13": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "14": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "5": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "9": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "7": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "8": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "10": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "1": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      }
+    },
+    "msgq_inv": [],
+    "CRHR": false,
+    "msgq_resp": [],
+    "msgq_fwd": [],
+    "msgq_out": [],
+    "LSR": [],
+    "PC": 0
+  },
+  "0": {
+    "ack_needed": 0,
+    "log": [
+      "End of node_0 program!"
+    ],
+    "CRHR_inst": [
+      "ev",
+      66
+    ],
+    "ack_cnt": 0,
+    "cache": {
+      "2": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "4": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "0": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "3": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "6": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "11": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "15": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "12": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "13": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "14": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "5": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "9": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "7": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "8": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "10": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "1": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      }
+    },
+    "msgq_inv": [],
+    "CRHR": false,
+    "msgq_resp": [],
+    "msgq_fwd": [],
+    "msgq_out": [],
+    "LSR": [],
+    "PC": 9
+  },
+  "3": {
+    "ack_needed": 0,
+    "log": [],
+    "CRHR_inst": [
+      "nop",
+      0
+    ],
+    "ack_cnt": 0,
+    "cache": {
+      "2": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "4": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "0": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "3": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "6": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "11": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "15": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "12": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "13": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "14": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "5": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "9": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "7": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "8": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "10": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      },
+      "1": {
+        "tag": null,
+        "offset": null,
+        "addr": null,
+        "protocol": "I",
+        "index": null
+      }
+    },
+    "msgq_inv": [],
+    "CRHR": false,
+    "msgq_resp": [],
+    "msgq_fwd": [],
+    "msgq_out": [],
+    "LSR": [],
+    "PC": 0
+  },
+  "cycle": 30
 }

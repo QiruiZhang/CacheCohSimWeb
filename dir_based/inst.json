@@ -6,7 +6,7 @@
   "line_size": 8,
   "mem_size": 512,
   "cache_way": 2,
-  "run_node" : 3,
+  "run_node" : 0,
 
   "node_0": [
     ["nop", 0], 

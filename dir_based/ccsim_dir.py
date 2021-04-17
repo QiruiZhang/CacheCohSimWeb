@@ -12,13 +12,11 @@ def json_dump(filepath, dict):
 # Main
 if __name__ == "__main__":
     # open inst file
-    inst_file   = open(sys.argv[1], 'r')
-    inst_dict   = json.load(inst_file)
+    inst_dict = json.loads(sys.argv[1])
 
     # open cache file
     if len(sys.argv) == 3:
-        cache_file = open(sys.argv[2], 'r')
-        cache_dict_in = json.load(cache_file)
+        cache_dict_in = json.loads(sys.argv[2])
     else:
         cache_dict_in = None
 
