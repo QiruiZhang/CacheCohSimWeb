@@ -9,6 +9,7 @@ class bus():
         Reply = None
         BusReply_Fin = None
         for cache in self.all_caches:
+        #for cache in self.caches:
             valid = False
             if cache.cache_ID != cache_id:
                 valid, Reply = cache.handle_BusInv(addr)

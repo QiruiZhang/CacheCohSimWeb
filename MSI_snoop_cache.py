@@ -1,5 +1,6 @@
 import math
 import random
+import json
 from MSI_snoop_bus import bus
 
 # state
@@ -9,7 +10,7 @@ from MSI_snoop_bus import bus
 
 class cache():
 
-    def __init__(self, ID, size, line_size, mem_size, bus, file, LSR):
+    def __init__(self, ID, size, line_size, mem_size, bus, file, LSR, PC):
         self.cache_ID = ID
         self.cache_size = size  # Bytes
         self.cache_line_size = line_size  # Bytes
@@ -19,14 +20,15 @@ class cache():
         self.bus = bus
         self.bus.add_cache(self)
         self.line_queue = LSR
+        self.PC = PC
 
         if file == None:
             for i in range(self.cache_num_line):
-                self.cache_dict[i] = {"addr": None,
+                self.cache_dict[str(i)] = {"addr": None,
                                       "tag": None,
                                       "index": None,
                                       "offset": None,
-                                      "data" : None,
+                                      #"data" : None,
                                       "state": "I"}
         else:
             self.cache_dict = file
@@ -41,14 +43,14 @@ class cache():
             print(f"line[{key}] = {val}")
 
     def return_cache_dict(self):
-        return {self.cache_ID: {"cache": self.cache_dict, "LSR": self.line_queue}}
+        return {self.cache_ID: {"cache": self.cache_dict, "LSR": self.line_queue, "PC": self.PC}}
 
 
 # Direct-map
 class direct_cache(cache):
 
-    def __init__(self, ID, size=128, line_size=8, mem_size=512, bus=bus(), file=None, LSR=[]):
-        super().__init__(ID, size, line_size, mem_size, bus, file, LSR)
+    def __init__(self, ID, size=128, line_size=8, mem_size=512, bus=bus(), file=None, LSR=[], PC=0):
+        super().__init__(ID, size, line_size, mem_size, bus, file, LSR, PC)
 
     def operation(self, inst, addr, data):
         hit = False
@@ -60,7 +62,7 @@ class direct_cache(cache):
             #for key, val in self.cache_dict.items():
             #   if "I" != val["state"] and index == val["index"] and tag == val["tag"]:
             #       hit = True
-            if self.cache_dict[int(index, 2)]["state"] != "I" and tag == self.cache_dict[int(index, 2)]["tag"]:
+            if self.cache_dict[str(int(index, 2))]["state"] != "I" and tag == self.cache_dict[str(int(index, 2))]["tag"]:
                 hit = True
             # Miss
             if self.cache_dict[str(int(index, 2))]["state"] == "I":
@@ -72,7 +74,7 @@ class direct_cache(cache):
                 self.cache_dict[str(int(index, 2))]["dirty"] = False
                 self.cache_dict[str(int(index, 2))]["state"] = "S"
             # Miss and Evict
-            if self.cache_dict[str(int(index, 2))]["state"] != "I" and tag != self.cache_dict[int(index, 2)]["tag"]:
+            if self.cache_dict[str(int(index, 2))]["state"] != "I" and tag != self.cache_dict[str(int(index, 2))]["tag"]:
                 self.cache_dict[str(int(index, 2))]["addr"] = addr
                 self.cache_dict[str(int(index, 2))]["tag"] = tag
                 self.cache_dict[str(int(index, 2))]["index"] = index
@@ -84,7 +86,7 @@ class direct_cache(cache):
 
         return hit
 
-    def write(self, addr, data):
+    def write(self, addr):
         hit = False
         mem = False
         mem_data = None
@@ -97,16 +99,16 @@ class direct_cache(cache):
             hit = True
             self.cache_dict[str(int(index, 2))]["addr"] = addr
             self.cache_dict[str(int(index, 2))]["offset"] = offset
-            self.cache_dict[str(int(index, 2))]["data"] = data
+            #self.cache_dict[str(int(index, 2))]["data"] = data
             #self.cache_dict[int(index, 2)]["dirty"] = True
         #state = "S"
         if (self.cache_dict[str(int(index, 2))]["state"] == "S" and
-                tag == self.cache_dict[strint(index, 2)]["tag"]):
+                tag == self.cache_dict[int(index, 2)]["tag"]):
             hit = True
             pass_data = self.bus.BusInv(self.cache_ID, addr)
             self.cache_dict[str(int(index, 2))]["addr"] = addr
             self.cache_dict[str(int(index, 2))]["offset"] = offset
-            self.cache_dict[str(int(index, 2))]["data"] = data
+            #self.cache_dict[str(int(index, 2))]["data"] = data
             self.cache_dict[str(int(index, 2))]["state"] = "M"
         #state = "I"
         if self.cache_dict[str(int(index, 2))]["state"] == "I":
@@ -115,28 +117,28 @@ class direct_cache(cache):
             self.cache_dict[str(int(index, 2))]["tag"] = tag
             self.cache_dict[str(int(index, 2))]["index"] = index
             self.cache_dict[str(int(index, 2))]["offset"] = offset
-            self.cache_dict[str(int(index, 2))]["data"] = data
+            #self.cache_dict[str(int(index, 2))]["data"] = data
             self.cache_dict[str(int(index, 2))]["state"] = "M"
         #evict S
         if (self.cache_dict[str(int(index, 2))]["state"] == "S" and
-                tag != self.cache_dict[int(index, 2)]["tag"]):
+                tag != self.cache_dict[str(int(index, 2))]["tag"]):
             self.cache_dict[str(int(index, 2))]["addr"] = addr
             self.cache_dict[str(int(index, 2))]["tag"] = tag
             self.cache_dict[str(int(index, 2))]["index"] = index
             self.cache_dict[str(int(index, 2))]["offset"] = offset
-            self.cache_dict[str(int(index, 2))]["data"] = data
+            #self.cache_dict[str(int(index, 2))]["data"] = data
             self.cache_dict[str(int(index, 2))]["state"] = "M"
         #evict M
         if (self.cache_dict[str(int(index, 2))]["state"] == "M" and
                 tag != self.cache_dict[str(int(index, 2))]["tag"]):
             mem = True
-            mem_data = self.cache_dict[str(int(index, 2))]["data"]
+            #mem_data = self.cache_dict[str(int(index, 2))]["data"]
             mem_addr = self.cache_dict[str(int(index, 2))]["addr"]
             self.cache_dict[str(int(index, 2))]["addr"] = addr
             self.cache_dict[str(int(index, 2))]["tag"] = tag
             self.cache_dict[str(int(index, 2))]["index"] = index
             self.cache_dict[str(int(index, 2))]["offset"] = offset
-            self.cache_dict[str(int(index, 2))]["data"] = data
+            #self.cache_dict[str(int(index, 2))]["data"] = data
             self.cache_dict[str(int(index, 2))]["state"] = "M"
         return hit, mem, mem_data, mem_addr
 
@@ -149,7 +151,7 @@ class direct_cache(cache):
         tag, index, offset = self.parse_address(addr)
         #state = "M"
         if (self.cache_dict[str(int(index, 2))]["state"] == "M" and
-                tag == self.cache_dict[int(index, 2)]["tag"]):
+                tag == self.cache_dict[str(int(index, 2))]["tag"]):
             hit = True
             self.cache_dict[str(int(index, 2))]["addr"] = addr
             self.cache_dict[str(int(index, 2))]["offset"] = offset
@@ -169,7 +171,7 @@ class direct_cache(cache):
             self.cache_dict[str(int(index, 2))]["tag"] = tag
             self.cache_dict[str(int(index, 2))]["index"] = index
             self.cache_dict[str(int(index, 2))]["offset"] = offset
-            self.cache_dict[str(int(index, 2))]["data"] = pass_data
+            #self.cache_dict[str(int(index, 2))]["data"] = pass_data
             self.cache_dict[str(int(index, 2))]["state"] = "S"
             mem_data = pass_data
         # evict S
@@ -180,20 +182,20 @@ class direct_cache(cache):
             self.cache_dict[str(int(index, 2))]["tag"] = tag
             self.cache_dict[str(int(index, 2))]["index"] = index
             self.cache_dict[str(int(index, 2))]["offset"] = offset
-            self.cache_dict[str(int(index, 2))]["data"] = pass_data
+            #self.cache_dict[str(int(index, 2))]["data"] = pass_data
             #self.cache_dict[int(index, 2)]["state"] = "M"
         # evict M
         if (self.cache_dict[str(int(index, 2))]["state"] == "M" and
                 tag != self.cache_dict[str(int(index, 2))]["tag"]):
             pass_data, mem, mem_addr = self.bus.BusRd(self.cache_ID, addr)
             mem = True
-            mem_data = self.cache_dict[str(int(index, 2))]["data"]
+            #mem_data = self.cache_dict[str(int(index, 2))]["data"]
             mem_addr = self.cache_dict[str(int(index, 2))]["addr"]
             self.cache_dict[str(int(index, 2))]["addr"] = addr
             self.cache_dict[str(int(index, 2))]["tag"] = tag
             self.cache_dict[str(int(index, 2))]["index"] = index
             self.cache_dict[str(int(index, 2))]["offset"] = offset
-            self.cache_dict[str(int(index, 2))]["data"] = pass_data
+            #self.cache_dict[str(int(index, 2))]["data"] = pass_data
             self.cache_dict[str(int(index, 2))]["state"] = "S"
         return hit, mem, mem_data, mem_addr
 
@@ -208,7 +210,7 @@ class direct_cache(cache):
         if tag == self.cache_dict[str(int(index, 2))]["tag"]:
             self.cache_dict[str(int(index, 2))]["state"] = "I"
             valid = True
-            BusReply = self.cache_dict[str(int(index, 2))]["data"]
+            #BusReply = self.cache_dict[str(int(index, 2))]["data"]
         return valid, BusReply
 
     def handle_BusRd(self, addr):
@@ -224,7 +226,7 @@ class direct_cache(cache):
         if (self.cache_dict[str(int(index, 2))]["state"] == "S" and
                 tag == self.cache_dict[str(int(index, 2))]["tag"]):
             valid = True
-            BusReply = self.cache_dict[str(int(index, 2))]["data"]
+            BusReply = self.cache_dict[int(index, 2)]["data"]
         if (self.cache_dict[str(int(index, 2))]["state"] == "M" and
                 tag == self.cache_dict[str(int(index, 2))]["tag"]):
             valid = True
@@ -239,19 +241,15 @@ class direct_cache(cache):
         tag, index, offset = self.parse_address(addr)
         valid = False
         BusReply = None
-        #self.cache_dict[int(index, 2)]["addr"] = addr
-        #self.cache_dict[int(index, 2)]["tag"] = tag
-        #self.cache_dict[int(index, 2)]["index"] = index
-        #self.cache_dict[int(index, 2)]["offset"] = offset
         if (self.cache_dict[str(int(index, 2))]["state"] == "S" and
                 tag == self.cache_dict[str(int(index, 2))]["tag"]):
             valid = True
-            BusReply = self.cache_dict[str(int(index, 2))]["data"]
+            #BusReply = self.cache_dict[str(int(index, 2))]["data"]
             self.cache_dict[str(int(index, 2))]["state"] = "I"
         if (self.cache_dict[str(int(index, 2))]["state"] == "M" and
                 tag == self.cache_dict[str(int(index, 2))]["tag"]):
             valid = True
-            BusReply = self.cache_dict[str(int(index, 2))]["data"]
+            #BusReply = self.cache_dict[str(int(index, 2))]["data"]
             self.cache_dict[str(int(index, 2))]["state"] = "I"
         return valid, BusReply
 
@@ -273,10 +271,10 @@ class direct_cache(cache):
 # Fully Associative
 class fully_cache(cache):
 
-    def __init__(self, ID, size = 128, line_size = 8, mem_size = 512, bus=bus(), file=None, LSR=[]):
-        super().__init__(ID, size, line_size, mem_size, bus, file, LSR)
+    def __init__(self, ID, size = 128, line_size = 8, mem_size = 512, bus=bus(), file=None, LSR=[], PC=0):
+        super().__init__(ID, size, line_size, mem_size, bus, file, LSR, PC)
         # For LSR
-        self.line_queue = []
+        #self.line_queue = []
 
     def operation(self, inst, addr):
         hit = False
@@ -309,7 +307,7 @@ class fully_cache(cache):
                     self.cache_dict[fill_place]["offset"] = offset
         return hit
 
-    def write(self, addr, data):
+    def write(self, addr):
         hit = False
         mem = False
         mem_data = None
@@ -324,13 +322,13 @@ class fully_cache(cache):
                 if self.cache_dict[key]["state"] == "M":
                     self.cache_dict[key]["addr"] = addr
                     self.cache_dict[key]["offset"] = offset
-                    self.cache_dict[key]["data"] = data
+                    #self.cache_dict[key]["data"] = data
         #state = "S"
                 else:
                     pass_data = self.bus.BusInv(self.cache_ID, addr)
                     self.cache_dict[key]["addr"] = addr
                     self.cache_dict[key]["offset"] = offset
-                    self.cache_dict[key]["data"] = data
+                    #self.cache_dict[key]["data"] = data
                     self.cache_dict[key]["state"] = "M"
                 lru_place, fill_place = self.lru_mechanism(hit, key)
         #state = "I"
@@ -344,7 +342,7 @@ class fully_cache(cache):
             self.cache_dict[fill_place]["tag"] = tag
             self.cache_dict[fill_place]["index"] = index
             self.cache_dict[fill_place]["offset"] = offset
-            self.cache_dict[fill_place]["data"] = data
+            #self.cache_dict[fill_place]["data"] = data
             self.cache_dict[fill_place]["state"] = "M"
         elif (hit == False and
                 len(self.line_queue) == self.cache_num_line):
@@ -356,18 +354,18 @@ class fully_cache(cache):
                 self.cache_dict[lru_place]["tag"] = tag
                 self.cache_dict[lru_place]["index"] = index
                 self.cache_dict[lru_place]["offset"] = offset
-                self.cache_dict[lru_place]["data"] = data
+                #self.cache_dict[lru_place]["data"] = data
                 self.cache_dict[lru_place]["state"] = "M"
         # evict M
             elif self.cache_dict[lru_place]["state"] == "M":
                 mem = True
-                mem_data = self.cache_dict[lru_place]["data"]
+                #mem_data = self.cache_dict[lru_place]["data"]
                 mem_addr = self.cache_dict[lru_place]["addr"]
                 self.cache_dict[lru_place]["addr"] = addr
                 self.cache_dict[lru_place]["tag"] = tag
                 self.cache_dict[lru_place]["index"] = index
                 self.cache_dict[lru_place]["offset"] = offset
-                self.cache_dict[lru_place]["data"] = data
+                #self.cache_dict[lru_place]["data"] = data
                 self.cache_dict[lru_place]["state"] = "M"
         return hit, mem, mem_data, mem_addr
 
@@ -382,6 +380,7 @@ class fully_cache(cache):
             if (tag == val["tag"] and
                     self.cache_dict[key]["state"] != "I"):
                 hit = True
+                print(key)
         #state = "M"
                 if self.cache_dict[key]["state"] == "M":
                     self.cache_dict[key]["addr"] = addr
@@ -390,7 +389,7 @@ class fully_cache(cache):
                 else:
                     self.cache_dict[key]["addr"] = addr
                     self.cache_dict[key]["offset"] = offset
-                lru_place, fill_place = self.lru_mechanism(hit, key)
+                #lru_place, fill_place = self.lru_mechanism(hit, key)
         # state = "I"
         if (hit == False and
                 len(self.line_queue) != self.cache_num_line):
@@ -402,7 +401,7 @@ class fully_cache(cache):
             self.cache_dict[fill_place]["tag"] = tag
             self.cache_dict[fill_place]["index"] = index
             self.cache_dict[fill_place]["offset"] = offset
-            self.cache_dict[fill_place]["data"] = pass_data
+            #self.cache_dict[fill_place]["data"] = pass_data
             self.cache_dict[fill_place]["state"] = "S"
             mem_data = pass_data
         elif (hit == False and
@@ -416,18 +415,18 @@ class fully_cache(cache):
                 self.cache_dict[lru_place]["tag"] = tag
                 self.cache_dict[lru_place]["index"] = index
                 self.cache_dict[lru_place]["offset"] = offset
-                self.cache_dict[lru_place]["data"] = pass_data
+                #self.cache_dict[lru_place]["data"] = pass_data
         # evict M
             elif self.cache_dict[lru_place]["state"] == "M":
                 pass_data, mem, mem_addr = self.bus.BusRd(self.cache_ID, addr)
                 mem = True
-                mem_data = self.cache_dict[lru_place]["data"]
+                #mem_data = self.cache_dict[lru_place]["data"]
                 mem_addr = self.cache_dict[lru_place]["addr"]
                 self.cache_dict[lru_place]["addr"] = addr
                 self.cache_dict[lru_place]["tag"] = tag
                 self.cache_dict[lru_place]["index"] = index
                 self.cache_dict[lru_place]["offset"] = offset
-                self.cache_dict[lru_place]["data"] = pass_data
+                #self.cache_dict[lru_place]["data"] = pass_data
                 self.cache_dict[lru_place]["state"] = "S"
         return hit, mem, mem_data, mem_addr
 
@@ -440,7 +439,7 @@ class fully_cache(cache):
                     self.cache_dict[key]["state"] != "I"):
                 self.cache_dict[key]["state"] = "I"
                 valid = True
-                BusReply = self.cache_dict[key]["data"]
+                #BusReply = self.cache_dict[key]["data"]
                 self.line_queue.remove(key)
         return valid, BusReply
 
@@ -457,12 +456,12 @@ class fully_cache(cache):
                 #state = "S"
                 if self.cache_dict[key]["state"] == "S":
                     valid = True
-                    BusReply = self.cache_dict[key]["data"]
+                    #BusReply = self.cache_dict[key]["data"]
                 # state = "M"
                 else:
                     valid = True
                     self.cache_dict[key]["state"] = "S"
-                    BusReply = self.cache_dict[key]["data"]
+                    #BusReply = self.cache_dict[key]["data"]
                     # mem snarf
                     mem = True
                     mem_addr = addr
@@ -481,7 +480,7 @@ class fully_cache(cache):
                     self.cache_dict[key]["state"] != "I"):
                 # state = "S" and "M"
                 valid = True
-                BusReply = self.cache_dict[key]["data"]
+                #BusReply = self.cache_dict[key]["data"]
                 self.cache_dict[key]["state"] = "I"
                 self.line_queue.remove(key)
         return valid, BusReply
@@ -500,9 +499,9 @@ class fully_cache(cache):
                 self.line_queue.pop(0)
             #Set is still empty
             else:
-                fill_place = random.randint(0, self.cache_num_line - 1)
+                fill_place = str(random.randint(0, self.cache_num_line - 1))
                 while (fill_place in self.line_queue):
-                    fill_place = random.randint(0, self.cache_num_line - 1)
+                    fill_place = str(random.randint(0, self.cache_num_line - 1))
                 self.line_queue.append(fill_place)
         return lru_place, fill_place
 
@@ -521,15 +520,16 @@ class fully_cache(cache):
 # N-way Associative
 class nway_cache(cache):
 
-    def __init__(self, ID, size = 128, line_size = 8, mem_size = 512, way = 2, bus=bus(), file=None, LSR=[]):
-        super().__init__(ID, size, line_size, mem_size, bus, file, LSR)
+    def __init__(self, ID, size = 128, line_size = 8, mem_size = 512, way = 2, bus=bus(), file=None, LSR=[], PC=0):
+        super().__init__(ID, size, line_size, mem_size, bus, file, LSR, PC)
         self.way = way
         # For LSR
-        self.line_queue = []
+        #self.line_queue = []
         if len(LSR) == 0:
             for i in range(int(self.cache_num_line/self.way)):
                 list_temp = []
                 self.line_queue.append(list_temp)
+
 
     def operation(self, inst, addr):
         hit = False
@@ -566,7 +566,7 @@ class nway_cache(cache):
                     self.line_queue[int(index, 2)].append(num)
         return hit
 
-    def write(self, addr, data):
+    def write(self, addr):
         hit = False
         mem = False
         mem_data = None
@@ -582,13 +582,13 @@ class nway_cache(cache):
                 if self.cache_dict[key]["state"] == "M":
                     self.cache_dict[key]["addr"] = addr
                     self.cache_dict[key]["offset"] = offset
-                    self.cache_dict[key]["data"] = data
+                    #self.cache_dict[key]["data"] = data
         #state = "S"
                 else:
                     pass_data = self.bus.BusInv(self.cache_ID, addr)
                     self.cache_dict[key]["addr"] = addr
                     self.cache_dict[key]["offset"] = offset
-                    self.cache_dict[key]["data"] = data
+                    #self.cache_dict[key]["data"] = data
                     self.cache_dict[key]["state"] = "M"
                 lru_place, fill_place = self.lru_mechanism(hit, key, index)
         #state = "I"
@@ -602,7 +602,7 @@ class nway_cache(cache):
             self.cache_dict[fill_place]["tag"] = tag
             self.cache_dict[fill_place]["index"] = index
             self.cache_dict[fill_place]["offset"] = offset
-            self.cache_dict[fill_place]["data"] = data
+            #self.cache_dict[fill_place]["data"] = data
             self.cache_dict[fill_place]["state"] = "M"
         elif (hit == False and
                 len(self.line_queue[int(index, 2)]) == self.way):
@@ -614,18 +614,18 @@ class nway_cache(cache):
                 self.cache_dict[lru_place]["tag"] = tag
                 self.cache_dict[lru_place]["index"] = index
                 self.cache_dict[lru_place]["offset"] = offset
-                self.cache_dict[lru_place]["data"] = data
+                #self.cache_dict[lru_place]["data"] = data
                 self.cache_dict[lru_place]["state"] = "M"
         # evict M
             elif self.cache_dict[lru_place]["state"] == "M":
                 mem = True
-                mem_data = self.cache_dict[lru_place]["data"]
+                #mem_data = self.cache_dict[lru_place]["data"]
                 mem_addr = self.cache_dict[lru_place]["addr"]
                 self.cache_dict[lru_place]["addr"] = addr
                 self.cache_dict[lru_place]["tag"] = tag
                 self.cache_dict[lru_place]["index"] = index
                 self.cache_dict[lru_place]["offset"] = offset
-                self.cache_dict[lru_place]["data"] = data
+                #self.cache_dict[lru_place]["data"] = data
                 self.cache_dict[lru_place]["state"] = "M"
         return hit, mem, mem_data, mem_addr
 
@@ -661,7 +661,7 @@ class nway_cache(cache):
             self.cache_dict[fill_place]["tag"] = tag
             self.cache_dict[fill_place]["index"] = index
             self.cache_dict[fill_place]["offset"] = offset
-            self.cache_dict[fill_place]["data"] = pass_data
+            #self.cache_dict[fill_place]["data"] = pass_data
             self.cache_dict[fill_place]["state"] = "S"
             mem_data = pass_data
         elif (hit == False and
@@ -675,18 +675,18 @@ class nway_cache(cache):
                 self.cache_dict[lru_place]["tag"] = tag
                 self.cache_dict[lru_place]["index"] = index
                 self.cache_dict[lru_place]["offset"] = offset
-                self.cache_dict[lru_place]["data"] = pass_data
+                #self.cache_dict[lru_place]["data"] = pass_data
         # evict M
             elif self.cache_dict[lru_place]["state"] == "M":
                 pass_data, mem, mem_addr = self.bus.BusRd(self.cache_ID, addr)
                 mem = True
-                mem_data = self.cache_dict[lru_place]["data"]
+                #mem_data = self.cache_dict[lru_place]["data"]
                 mem_addr = self.cache_dict[lru_place]["addr"]
                 self.cache_dict[lru_place]["addr"] = addr
                 self.cache_dict[lru_place]["tag"] = tag
                 self.cache_dict[lru_place]["index"] = index
                 self.cache_dict[lru_place]["offset"] = offset
-                self.cache_dict[lru_place]["data"] = pass_data
+                #self.cache_dict[lru_place]["data"] = pass_data
                 self.cache_dict[lru_place]["state"] = "S"
         return hit, mem, mem_data, mem_addr
 
@@ -700,7 +700,7 @@ class nway_cache(cache):
                     self.cache_dict[key]["state"] != "I"):
                 self.cache_dict[key]["state"] = "I"
                 valid = True
-                BusReply = self.cache_dict[key]["data"]
+                #BusReply = self.cache_dict[key]["data"]
                 self.line_queue[int(index, 2)].remove(key)
         return valid, BusReply
 
@@ -718,12 +718,12 @@ class nway_cache(cache):
                 #state = "S"
                 if self.cache_dict[key]["state"] == "S":
                     valid = True
-                    BusReply = self.cache_dict[key]["data"]
+                    #BusReply = self.cache_dict[key]["data"]
                 # state = "M"
                 else:
                     valid = True
                     self.cache_dict[key]["state"] = "S"
-                    BusReply = self.cache_dict[key]["data"]
+                    #BusReply = self.cache_dict[key]["data"]
                     # mem snarf
                     mem = True
                     mem_addr = addr
@@ -743,7 +743,7 @@ class nway_cache(cache):
                     self.cache_dict[key]["state"] != "I"):
                 # state = "S" and "M"
                 valid = True
-                BusReply = self.cache_dict[key]["data"]
+                #BusReply = self.cache_dict[key]["data"]
                 self.cache_dict[key]["state"] = "I"
                 self.line_queue[int(index, 2)].remove(key)
         return valid, BusReply
@@ -762,9 +762,9 @@ class nway_cache(cache):
                 self.line_queue[int(index, 2)].pop(0)
             #Set is still empty
             else:
-                fill_place = random.randint((int(index, 2) * self.way), (int(index, 2) * self.way) + self.way - 1)
+                fill_place = str(random.randint((int(index, 2) * self.way), (int(index, 2) * self.way) + self.way - 1))
                 while (fill_place in self.line_queue[int(index, 2)]):
-                    fill_place = random.randint((int(index, 2) * self.way), (int(index, 2) * self.way) + self.way - 1)
+                    fill_place = str(random.randint((int(index, 2) * self.way), (int(index, 2) * self.way) + self.way - 1))
                 self.line_queue[int(index, 2)].append(fill_place)
         return lru_place, fill_place
 
@@ -786,18 +786,27 @@ class nway_cache(cache):
         offset = addr_bin[(self.addr_bits - offset_bit):]
         return tag, index, offset
 
+def json_dump(filepath, dict):
+
+    with open(filepath, 'w', encoding='utf-8') as file_obj:
+        json.dump(dict, file_obj, ensure_ascii=False, indent=2)
+
+
+
 def main():
     processors = 4
-    #shared_bus = bus()
+    shared_bus = bus()
     caches = []
     #for cache_id in range(processors):
     #   cache = nway_cache(cache_id)
     #   caches.append(cache)
-    c = nway_cache(0)
-    b = nway_cache(1)
+    c = direct_cache(0)
+    b = direct_cache(1)
+    caches.append(c)
+    caches.append(b)
     #print(c.operation("st", 66, 45))
     print(c.write(66, 45))
-    print(c.write(194, 75))
+    #print(c.write(194, 75))
     print(b.read(66))
     #print(c.operation("st", 332, 40))
     #print(c.operation("st", 167, 57))
@@ -805,6 +814,13 @@ def main():
     print(c.write(194, 50))
     c.print_cache()
     b.print_cache()
+    #print()
+
+
+    dump_dict = {}
+    #for i in cache_list:
+    dump_dict.update(c.return_cache_dict())
+    json_dump("cache.json", dump_dict)
 
 if __name__ == "__main__":
 	main()
