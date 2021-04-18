@@ -5,21 +5,6 @@ head
         * {
         box-sizing: border-box;
         }
-        /*
-        // Create two equal columns that floats next to each other 
-        .column {
-        float: left;
-        width: #{1.0/data.inst.num_cache*100}%;
-        padding: 10px;
-        height: 300px; // Should be removed. Only for demonstration 
-        }
-        // Clear floats after the columns
-        .row:after {
-        content: "";
-        display: table;
-        clear: both;
-        }
-        */
         .float-container {
         border: 2px solid #fff;
         padding: 5px;
@@ -65,53 +50,37 @@ body
     p M-modifed | S-shared | I-invalid
     form(action='/reset' method='post')
         input(type='submit', value='Reset' style='float: right; margin-right: 2.5em; height:40px; width:50pxl; background-color: #4CAF50;' )
-    table(style="width:100px")
-        tbody 
-        tr
-            td(style="background-color:#FF0000;height:20px;width: 30px")
-            td(style="height:20px;") LSR
     - var lineNum = data.inst.cache_size/data.inst.line_size
     - var ncol = 0;
     ul
-    .float-container
-    while ncol++ < data.inst.num_cache
-        .float-child
-            h2(style="float: left;") Node #{ncol}
-            p(style="float: right;") # Hits: 0 &nbsp &nbsp # Misses: 0 &nbsp &nbsp
-            table
-                tbody
-                tr
-                    - var irow = 0;
-                    td State
-                    while irow++ < lineNum
-                        if (irow-1)  == data.cache[ncol-1].LSR
-                            td(style="background-color:#FF0000") #{data.cache[ncol-1].cache[irow-1].protocol}
-                        else 
+    form(action='/' method='post')
+        .float-container
+        while ncol++ < data.inst.num_cache
+            .float-child
+                h2(style="float: left;") Node #{ncol}
+                p(style="float: right;") # Hits: 0 &nbsp &nbsp # Misses: 0 &nbsp &nbsp
+                table
+                    tbody
+                    tr
+                        - var irow = 0;
+                        td State
+                        while irow++ < lineNum
                             td #{data.cache[ncol-1].cache[irow-1].protocol}
-                tr
-                    - var irow = 0;
-                    td Addr
-                    while irow++ < lineNum
-                        if (irow-1) == data.cache[ncol-1].LSR
-                            td(style="background-color:#FF0000") #{data.cache[ncol-1].cache[irow-1].addr}
-                        else
+                    tr
+                        - var irow = 0;
+                        td Addr
+                        while irow++ < lineNum
                             td #{data.cache[ncol-1].cache[irow-1].addr}
-            h3 Instructions
-            form(action='/code' method='post')
+                h3 Instructions
                 label(for='instr') 
                 textarea#instr(name='instr', rows='10')
                 br
                 input(type='hidden' name='node_id' value=ncol)
-                input(type='submit', value='Verify' style='float: right; margin-right: 0.5em;') 
-        
-    .float-container
-        .float-child-two-col
-            form(action='')
-            input(type='submit', value='Step' style='float: left; margin-right: 0.5em') 
-            form(action='')
-            input(type='submit', value='>>' style='float: left; margin-right: 0.5em') 
-        .float-child-two-col
-            form(action='/' method='post')
+            
+        .float-container
+            .float-child-two-col
+            .float-child-two-col
+
                 .float-container
                     .float-child-two-col
                         label(for='cache_type') 
@@ -141,9 +110,9 @@ body
                                     else
                                         option(value='2') 2
                                     if data.inst.num_cache == '3'
-                                        option(value='4' selected) 4
+                                        option(value='3' selected) 3
                                     else
-                                        option(value='4') 4
+                                        option(value='3') 3
                         label(for='cache_size') 
                             h4 Cache Size (B):
                                 select#cache_size(name='cache_size')
@@ -189,6 +158,8 @@ body
                                         option(value='4' selected) 4
                                     else
                                         option(value='4') 4
-                //input(type='hidden' name='cur_cache' value=data.cache)
+            input(type='hidden' name='data' value=data)
+            if data.inst.reset == 0
                 input(type='submit' value='Set' style='float: right; margin-right: 1em;height:40px; width:50px; background-color: lightblue;')
-
+            else 
+                input(type='submit' value='Step' style='float: right; margin-right: 1em;height:40px; width:50px; background-color: lightblue;')
