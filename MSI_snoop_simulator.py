@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
+import os.path
+import json
+from os import path
 from MSI_snoop_cache import direct_cache
 from MSI_snoop_cache import fully_cache
 from MSI_snoop_cache import nway_cache
 from MSI_snoop_bus import bus
-import os.path
-import json
 import sys
-from os import path
-
 
 def json_dump(filepath, dict):
     with open(filepath, 'w', encoding='utf-8') as file_obj:
         json.dump(dict, file_obj, ensure_ascii=False, indent=2)
-
 
 # Main
 def main():
