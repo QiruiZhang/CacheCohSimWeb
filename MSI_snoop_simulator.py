@@ -19,7 +19,7 @@ def main():
     shared_bus = bus()
     #inst_file   = open(sys.argv[1], 'r')
     #inst_dict   = json.load(inst_file)
-    inst_dict   = json.loads(sys.agv[1])
+    inst_dict   = json.loads(sys.argv[1])
     reset       = inst_dict["reset"]
     num_cache   = inst_dict["num_cache"]
     cache_type  = inst_dict["cache_type"]
