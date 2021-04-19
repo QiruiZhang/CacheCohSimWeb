@@ -11,7 +11,6 @@ app.use(express.urlencoded({
 //const hostname = "192.168.0.109";
 //const fake_host = "0.0.0.0";
 const port = 3000;
-//add the router
 
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
@@ -20,9 +19,7 @@ app.listen(port, function () {
   console.log('Listening to port:  ' + port);
 });
 
-// REST APIs
 app.get('/', (req, res) => {
-  //let data = initialize_data();
   res.render('setting');
 });
 
@@ -33,9 +30,7 @@ app.post('/set', (req, res) => {
 
 app.post('/instruction', (req, res) => {
   console.log('/instruction');
-  // update instruction
   let data = update_instruction(req.body);
-  // simulate for the first step
   let simulator_program = find_simulator(data.inst["protocol_type"]);
   let simulator = spawn(simulator_program, [JSON.stringify(data.inst)]);
   simulator.stdout.on('data', function (d) {
@@ -43,48 +38,54 @@ app.post('/instruction', (req, res) => {
     data.cache = parsed_d.cache;
     data.inst = parsed_d.inst;
     data.inst['reset'] = 1;
-    console.log(JSON.stringify(data));
+    //console.log(JSON.stringify(data, null, 4));
+    console.log(JSON.stringify(data.inst));
+    console.log('-------------------------')
+    console.log(JSON.stringify(data.cache));
     res.render('index', { data: data });
   });
 });
 
 app.post('/step', (req, res) => {
   console.log('/step');
-  // call simulator to simulate one-step
   let data = JSON.parse(req.body.data);
   data.inst.run_node = req.body.run_node;
   data = parse_int(data);
   let simulator_program = find_simulator(data.inst["protocol_type"]);
-  // spawn new child process to call the python script
   console.log(simulator_program);
-  let simulator = spawn(simulator_program, [JSON.stringify(data.inst), JSON.stringify(data.cache)]);
-
-  // collect data from script
-  simulator.stdout.on('data', function (d) {
-    let parsed_d = JSON.parse(d.toString());
-    console.log(d.toString());
+  let simulator = spawn(simulator_program, [JSON.stringify(data.inst), JSON.stringify(data.cache)], { stdio: 'pipe' });
+  
+  let bufferArray = [];
+  simulator.stdout.on('data', (d) => {
+    bufferArray.push(d)
+  });
+  
+  simulator.stderr.on('data', (d) => {
+    console.error('stderr: ${d}');
+  });
+  
+  simulator.on('close', (code) => {
+    console.log('child process exited with code ${code}');
+    let dataBuffer =  Buffer.concat(bufferArray);
+    let parsed_d = JSON.parse(dataBuffer.toString());
+    console.log(dataBuffer.toString());
     data.cache = parsed_d.cache;
     data.inst = parsed_d.inst;
     res.render('index', { data: data });
   });
+
+  // simulator.stdout.on('data', function (d) {
+  //   let parsed_d = JSON.parse(d.toString());
+  //   console.log(d.toString());
+  //   data.cache = parsed_d.cache;
+  //   data.inst = parsed_d.inst;
+  //   res.render('index', { data: data });
+  // });
 });
 
 app.post('/reset', (req, res) => {
   res.redirect('/');
 });
-
-function update_setting(req_body) {
-  let data = JSON.parse(req_body.data);
-  data.inst["reset"] = 1;
-  data.inst["cache_type"] = req_body["cache_type"];
-  data.inst["num_cache"] = req_body["num_cache"];
-  data.inst["cache_size"] = req_body["cache_size"];
-  data.inst["line_size"] = req_body["line_size"];
-  data.inst["mem_size"] = req_body["mem_size"];
-  data.inst["cache_way"] = req_body["cache_way"];
-
-  return data;
-}
 
 function update_instruction(req_body) {
   let data = JSON.parse(req_body.data);
@@ -148,11 +149,6 @@ function find_simulator(protocol) {
   }
 }
 
-function getRandomInt(max) {
-  return Math.floor(Math.random() * max);
-}
-
-
 function initialize_data(inst_body) {
   // Initialize instruction
   inst0 = inst_body;
@@ -196,35 +192,3 @@ function initialize_data(inst_body) {
   }
   return { inst: inst0, cache: cache0 };
 }
-
-
-// function update_data(req_body) {
-//   let data = JSON.parse(req_body.data);
-//   let num_nodes = data.inst["num_cache"];
-//   if (num_nodes == 1) {
-//     req_body.instr = [req_body.instr];
-//   }
-//   for (let i = 0; i < num_nodes; i++) {
-//     if (i == 0) {
-//       data.inst["node_0"] = parse_instruction(req_body.instr[i]);
-//     } else if (i == 1) {
-//       data.inst["node_1"] = parse_instruction(req_body.instr[i]);
-//     } else if (i == 2) {
-//       data.inst["node_2"] = parse_instruction(req_body.instr[i]);
-//     }
-//   }
-//   for (let i = 0; i < data.inst["num_cache"]; i++) {
-//     let n_blocks = data.inst.cache_size / data.inst.line_size;
-//     let rnd_blockID = getRandomInt(n_blocks);
-//     data.cache[i]["cache"][rnd_blockID] = {
-//       "addr": 66,
-//       "tag": "001000",
-//       "index": null,
-//       "offset": "010",
-//       "protocol": "M"
-//     };
-//     data.cache[i]["LSR"] = rnd_blockID;
-//   }
-//   return data;
-// }
-
