@@ -7,7 +7,7 @@ head
         }
         .float-container {
         border: 2px solid #fff;
-        padding: 5px;
+        padding: 0px;
         }
         .float-child {
         width:  #{1.0/data.inst.num_cache*100}%;
@@ -20,6 +20,15 @@ head
         float: left;
         padding: 10px;
         border: none;
+        }
+        .float-child-six-col {
+        width:  15.6666%;
+        float: left;
+        padding: 0px;
+        border: none;
+        }
+        .item {
+        grid-row: 1 / span 8;
         }
         table, th, td {
         border: 1px solid black;
@@ -46,16 +55,69 @@ head
         }
 body
     h2 Cache Coherence Simulator
-    h3 Protocal: MSI
-    p M-modifed | S-shared | I-invalid
     form(action='/reset' method='post')
-        input(type='submit', value='Reset' style='float: right; margin-right: 2.5em; height:40px; width:50pxl; background-color: #4CAF50;' )
+        input(type='submit' value='Reset' style='float: right; margin-right: 2.5em; height:40px; width:50pxl; background-color: #4CAF50;' )
+    case data.inst.protocol_type
+        when 'snp_msi'
+            h4 Protocol: Snoop-based MSI (M-modifed | S-shared | I-invalid)
+        when 'snp_mesi'
+            h4 Protocol: Snoop-based MESI (M-modifed | E-exclusive | S-shared | I-invalid)
+        when 'dir_msi'
+            h4 Protocol: Directory-based MSI (M-modifed | S-shared | I-invalid)
+        default
+            h4 Protocol: Unknown
+    .float-container
+        .float-child-six-col
+            case data.inst.cache_type
+                when 'c'
+                    h4 Cache configuration: Custom
+                when 'd'
+                    h4 Cache configuration: Direct
+                when 'f'
+                    h4 Cache configuration: Fully
+                default 
+                    h4 Cache configuration: Unknown
+        .float-child-six-col
+            h4 Number of nodes: #{data.inst.num_cache}
+        .float-child-six-col
+            h4 Cache Size (B): #{data.inst.cache_size}
+        .float-child-six-col
+            h4 Block Size (B): #{data.inst.line_size}
+        .float-child-six-col
+            h4 Memory Size (B): #{data.inst.mem_size}
+        .float-child-six-col
+            h4 Number of cache way: #{data.inst.cache_way}
+    .float-container
+        if data.inst.protocol_type = 'dir_msi'
+            - lineNum = data.inst.mem_size/data.inst.line_size
+
+                    h2(style="float: left;") Home Node
+                    table
+                        tbody
+                        tr
+                            - irow = 0;
+                            td State
+                            while irow++ < lineNum
+                                if data.cache.dir.dict[irow-1].protocol === undefined
+                                    td #{data.cache.dir.dict[irow-1].state}
+                                else 
+                                    td #{data.cache.dir.dict[irow-1].protocol}
+                        tr
+                            - var irow = 0;
+                            td Addr
+                            while irow++ < lineNum
+                                td #{data.cache.dir.dict[irow-1].addr}
     - var lineNum = data.inst.cache_size/data.inst.line_size
     - var ncol = 0;
-    ul
-    form(action='/' method='post')
+    - var step_url = "";
+    if data.inst.reset == 0
+        - step_url = "/instruction"
+    else 
+        - step_url = "/step"
+    form(action = step_url method='post')
         .float-container
         while ncol++ < data.inst.num_cache
+            - var node_id = 'node_'+(ncol-1)
             .float-child
                 h2(style="float: left;") Node #{ncol}
                 p(style="float: right;") # Hits: 0 &nbsp &nbsp # Misses: 0 &nbsp &nbsp
@@ -65,101 +127,34 @@ body
                         - var irow = 0;
                         td State
                         while irow++ < lineNum
-                            td #{data.cache[ncol-1].cache[irow-1].protocol}
+                            if data.cache[ncol-1].cache[irow-1].protocol === undefined
+                                td #{data.cache[ncol-1].cache[irow-1].state}
+                            else 
+                                td #{data.cache[ncol-1].cache[irow-1].protocol}
                     tr
                         - var irow = 0;
                         td Addr
                         while irow++ < lineNum
                             td #{data.cache[ncol-1].cache[irow-1].addr}
-                h3 Instructions
-                label(for='instr') 
-                textarea#instr(name='instr', rows='10')
-                br
-                input(type='hidden' name='node_id' value=ncol)
-            
-        .float-container
-            .float-child-two-col
-            .float-child-two-col
-
-                .float-container
-                    .float-child-two-col
-                        label(for='cache_type') 
-                            h4 Cache configuration:
-                                select#cache_type(name='cache_type')
-                                    if data.inst.cache_type == 'c'
-                                        option(value='c' selected) Custom
-                                    else
-                                        option(value='c') Custom
-                                    if data.inst.cache_type == 'd'
-                                        option(value='d' selected) Direct
-                                    else
-                                        option(value='d') Direct
-                                    if data.inst.cache_type == 'f'
-                                        option(value='f' selected) Fully
-                                    else
-                                        option(value='f') Fully
-                        label(for='num_cache') 
-                            h4 Number of nodes:
-                                select#num_cache(name='num_cache')
-                                    if data.inst.num_cache == '1'
-                                        option(value='1' selected) 1
-                                    else
-                                        option(value='1') 1
-                                    if data.inst.num_cache == '2'
-                                        option(value='2' selected) 2
-                                    else
-                                        option(value='2') 2
-                                    if data.inst.num_cache == '3'
-                                        option(value='3' selected) 3
-                                    else
-                                        option(value='3') 3
-                        label(for='cache_size') 
-                            h4 Cache Size (B):
-                                select#cache_size(name='cache_size')
-                                    if data.inst.cache_size == '128'
-                                        option(value='128' selected) 128
-                                    else
-                                        option(value='128') 128
-                                    if data.inst.cache_size == '256'
-                                        option(value='256' selected) 256
-                                    else
-                                        option(value='256') 256
-                                    if data.inst.cache_size == '512'
-                                        option(value='512' selected) 512
-                                    else
-                                        option(value='512') 512
-                    .float-child-two-col
-                        label(for='line_size') 
-                            h4 Block Size (B):
-                                select#line_size(name='line_size')
-                                    if data.inst.line_size == '8'
-                                        option(value='8' selected) 8
-                                    else
-                                        option(value='8') 8
-                                    if data.inst.line_size == '16'
-                                        option(value='16' selected) 16
-                                    else
-                                        option(value='16') 16
-                        label(for='mem_size') 
-                            h4 Memory Size (B):
-                                select#mem_size(name='mem_size')
-                                    if data.inst.mem_size == '512'
-                                        option(value='512' selected) 512
-                                    else
-                                        option(value='512') 512
-                        label(for='cache_way') 
-                            h4 Number of cache way:
-                                select#cache_way(name='cache_way')
-                                    if data.inst.cache_way = '2'
-                                        option(value='2' selected) 2
-                                    else
-                                        option(value='2') 2
-                                    if data.inst.cache_way = '4'
-                                        option(value='4' selected) 4
-                                    else
-                                        option(value='4') 4
-            input(type='hidden' name='data' value=data)
-            if data.inst.reset == 0
-                input(type='submit' value='Set' style='float: right; margin-right: 1em;height:40px; width:50px; background-color: lightblue;')
-            else 
-                input(type='submit' value='Step' style='float: right; margin-right: 1em;height:40px; width:50px; background-color: lightblue;')
+                h4 Instructions
+                if data.inst.reset == 0
+                    label(for='instr') 
+                    textarea#instr(name='instr' rows='8')
+                else
+                    - var p_count = data.cache[icol-1]
+                    p #{data.inst[node_id][ncol-1][0]} #{data.inst[node_id][ncol-1][1]}
+        h6 &nbsp
+        label(for='run_node') 
+            h4(style='text-align: right; margin-right: 2.5em;') Run:&nbsp
+                - var itr = 0
+                select#run_node(name='run_node')
+                    while itr++ < data.inst.num_cache
+                        if data.inst.run_node == (itr-1)
+                            option(value= (itr-1) selected) node_#{itr}
+                        else
+                            option(value= (itr-1)) node_#{itr}         
+        input(type='hidden' name='data' value=data)
+        if data.inst.reset == 0
+            input(type='submit' value='Submit' style='float: right; margin-right: 2.5em;height:40px; width:80px; background-color: lightblue;')
+        else 
+            input(type='submit' value='Step' style='float: right; margin-right: 2.5em;height:40px; width:50px; background-color: lightblue;')
