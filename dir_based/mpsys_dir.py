@@ -105,12 +105,24 @@ class mpsys_dir():
         else:
             self.proc_nodes[int(msg["dst"][5:])].input_msg(msg)
 
-        log = "Message Transaction: " + msg["src"] + " sent " + msg["type"]
+        src = ''
+        if (msg["src"]) == "dir":
+            src = 'Directory'
+        else:
+            src = 'Processor ' + msg["src"]
+
+        dst = ''
+        if (msg["dst"]) == "dir":
+            dst = 'Directory'
+        else:
+            dst = 'Processor ' + msg["dst"]
+
+        log =  src + " sent " + msg["type"]
         if msg["type"] == "Data-FD":
             log += " (ack = " + str(msg["ack"]) + ")" 
-        log += " to " + msg["dst"] + " for addr-" + str(msg["addr"]) + " => dir-block-" + str(msg["dirblk"])
+        log += " to " + dst + " for addr-" + str(msg["addr"]) + " => dir-block-" + str(msg["dirblk"])
         if msg["req"] != None:
-            log += ", requested by " + msg["req"]
+            log += ", requested by Processor " + msg["req"]
 
         self.msg_log.append(log)
         if (self.print_flag):

@@ -23,9 +23,7 @@ if __name__ == "__main__":
     # Simulation Starts
     print_flag = False
     mpsys = mpd.mpsys_dir(inst_dict, print_flag)
-    #if inst_dict["reset"] == 0:
-    #    pass
-    #else:
+
     if cache_dict_in != None:
         mpsys.update_dict(cache_dict_in)
     mpsys.run_cycle()

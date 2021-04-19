@@ -208,7 +208,7 @@ class proc_node(cache):
                     self.cache_dict[str(index_dec)]["offset"] = None
                     
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " State Transition: I->IS_D @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    log = "State transition I->IS_D @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log)
@@ -237,7 +237,7 @@ class proc_node(cache):
                     self.cache_dict[str(index_dec)]["offset"] = None
 
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " State Transition: I->IM_AD @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    log = "State transition I->IM_AD @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log)
@@ -250,7 +250,7 @@ class proc_node(cache):
                 if op == "ld":
                     self.cache_dict[str(index_dec)]["addr"] = addr
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " Cache Hit: Load @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!"
+                    log = "Cache hit of Load @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log)  
@@ -278,7 +278,7 @@ class proc_node(cache):
                     self.cache_dict[str(index_dec)]["offset"] = None
                   
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " State Transition: S->SM_AD @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    log = "State transition S->SM_AD @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log) 
@@ -304,7 +304,7 @@ class proc_node(cache):
                     self.cache_dict[str(index_dec)]["protocol"] = "SI_A"
 
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " State Transition: S->SI_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    log = "State transition S->SI_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log) 
@@ -317,7 +317,7 @@ class proc_node(cache):
                 if op == "ld":
                     self.cache_dict[str(index_dec)]["addr"] = addr
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " Cache Hit: Load @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!"
+                    log = "Cache hit of Load @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log)  
@@ -329,7 +329,7 @@ class proc_node(cache):
                 if op == "ld":
                     self.cache_dict[str(index_dec)]["addr"] = addr
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " Cache Hit: Load @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!"
+                    log = "Cache hit of Load @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log)  
@@ -341,7 +341,7 @@ class proc_node(cache):
                 if op == "ld":
                     self.cache_dict[str(index_dec)]["addr"] = addr
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " Cache Hit: Load @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!"
+                    log = "Cache hit of Load @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log)  
@@ -351,7 +351,7 @@ class proc_node(cache):
                 elif op == "st":
                     self.cache_dict[str(index_dec)]["addr"] = addr
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " Cache Hit: Store @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!"
+                    log = "Cache hit of Store @ $-line-" + str(index_dec) + ", addr-" + str(addr) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log)  
@@ -376,7 +376,7 @@ class proc_node(cache):
                     self.cache_dict[str(index_dec)]["protocol"] = "MI_A"
                     
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " State Transition: M->MI_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    log = "State transition M->MI_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log)  
@@ -425,7 +425,7 @@ class proc_node(cache):
                     self.cache_dict[str(index_dec)]["protocol"] = "S"
 
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " State Transition: M->S @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    log = "State transition M->S @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log) 
@@ -465,7 +465,7 @@ class proc_node(cache):
                     self.cache_dict[str(index_dec)]["offset"] = None
                     
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " State Transition: M->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    log = "State transition M->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log) 
@@ -503,7 +503,7 @@ class proc_node(cache):
                     self.cache_dict[str(index_dec)]["protocol"] = "SI_A"
 
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " State Transition: MI_A->SI_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    log = "State transition MI_A->SI_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log) 
@@ -539,7 +539,7 @@ class proc_node(cache):
                     self.cache_dict[str(index_dec)]["protocol"] = "II_A"
                     
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " State Transition: MI_A->II_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    log = "State transition MI_A->II_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log) 
@@ -591,7 +591,7 @@ class proc_node(cache):
                 self.cache_dict[str(index_dec)]["offset"] = None
                 
                 # Update log
-                log = "Processor node_" + str(self.cache_ID) + " State Transition: S->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                log = "State transition S->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                 self.node_log.append(log)
                 if (self.print_flag): 
                     print(log) 
@@ -628,7 +628,7 @@ class proc_node(cache):
                 self.cache_dict[str(index_dec)]["protocol"] = "IM_AD"
                 
                 # Update log
-                log = "Processor node_" + str(self.cache_ID) + " State Transition: SM_AD->IM_AD @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                log = "State transition SM_AD->IM_AD @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                 self.node_log.append(log)
                 if (self.print_flag): 
                     print(log) 
@@ -665,7 +665,7 @@ class proc_node(cache):
                 self.cache_dict[str(index_dec)]["protocol"] = "II_A"
 
                 # Update log
-                log = "Processor node_" + str(self.cache_ID) + " State Transition: SI_A->II_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                log = "State transition SI_A->II_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                 self.node_log.append(log)
                 if (self.print_flag): 
                     print(log) 
@@ -690,7 +690,7 @@ class proc_node(cache):
                     self.cache_dict[str(index_dec)]["protocol"] = "S"
                     
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " State Transition: IS_D->S @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    log = "State transition IS_D->S @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log) 
@@ -705,7 +705,7 @@ class proc_node(cache):
                     self.cache_dict[str(index_dec)]["protocol"] = "S"
                     
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " State Transition: IS_D->S @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    log = "State transition IS_D->S @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log) 
@@ -728,7 +728,7 @@ class proc_node(cache):
                     self.cache_dict[str(index_dec)]["protocol"] = "M"
 
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " State Transition: IM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    log = "State transition IM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log) 
@@ -743,7 +743,7 @@ class proc_node(cache):
                     self.cache_dict[str(index_dec)]["protocol"] = "M"
 
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " State Transition: IM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    log = "State transition IM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log) 
@@ -760,7 +760,7 @@ class proc_node(cache):
                         self.cache_dict[str(index_dec)]["protocol"] = "M"
 
                         # Update log
-                        log = "Processor node_" + str(self.cache_ID) + " State Transition: IM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                        log = "State transition IM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                         self.node_log.append(log)
                         if (self.print_flag): 
                             print(log) 
@@ -774,7 +774,7 @@ class proc_node(cache):
                         self.cache_dict[str(index_dec)]["protocol"] = "IM_A"
 
                         # Update log
-                        log = "Processor node_" + str(self.cache_ID) + " State Transition: IM_AD->IM_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                        log = "State transition IM_AD->IM_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                         self.node_log.append(log)
                         if (self.print_flag): 
                             print(log) 
@@ -790,7 +790,7 @@ class proc_node(cache):
                         self.cache_dict[str(index_dec)]["protocol"] = "M"
                         
                         # Update log
-                        log = "Processor node_" + str(self.cache_ID) + " State Transition: IM_A->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                        log = "State transition IM_A->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                         self.node_log.append(log)
                         if (self.print_flag): 
                             print(log) 
@@ -815,7 +815,7 @@ class proc_node(cache):
                     self.cache_dict[str(index_dec)]["protocol"] = "M"
 
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " State Transition: SM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    log = "State transition SM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log) 
@@ -830,7 +830,7 @@ class proc_node(cache):
                     self.cache_dict[str(index_dec)]["protocol"] = "M"
 
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " State Transition: SM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    log = "State transition SM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log) 
@@ -847,7 +847,7 @@ class proc_node(cache):
                         self.cache_dict[str(index_dec)]["protocol"] = "M"
 
                         # Update log
-                        log = "Processor node_" + str(self.cache_ID) + " State Transition: SM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                        log = "State transition SM_AD->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                         self.node_log.append(log)
                         if (self.print_flag): 
                             print(log) 
@@ -861,7 +861,7 @@ class proc_node(cache):
                         self.cache_dict[str(index_dec)]["protocol"] = "SM_A"
 
                         # Update log
-                        log = "Processor node_" + str(self.cache_ID) + " State Transition: SM_AD->SM_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                        log = "State transition SM_AD->SM_A @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                         self.node_log.append(log)
                         if (self.print_flag): 
                             print(log) 
@@ -877,7 +877,7 @@ class proc_node(cache):
                         self.cache_dict[str(index_dec)]["protocol"] = "M"
                         
                         # Update log
-                        log = "Processor node_" + str(self.cache_ID) + " State Transition: SM_A->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                        log = "State transition SM_A->M @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                         self.node_log.append(log)
                         if (self.print_flag): 
                             print(log) 
@@ -900,7 +900,7 @@ class proc_node(cache):
                     self.cache_dict[str(index_dec)]["offset"] = None
                     
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " State Transition: MI_A->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    log = "State transition MI_A->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log)
@@ -921,7 +921,7 @@ class proc_node(cache):
                     self.cache_dict[str(index_dec)]["offset"] = None
                     
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " State Transition: SI_A->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    log = "State transition SI_A->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log)
@@ -942,7 +942,7 @@ class proc_node(cache):
                     self.cache_dict[str(index_dec)]["offset"] = None
                     
                     # Update log
-                    log = "Processor node_" + str(self.cache_ID) + " State Transition: II_A->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
+                    log = "State transition II_A->I @ $-line-" + str(index_dec) + ", dir-block-" + str(DirInd_dec) + "!"
                     self.node_log.append(log)
                     if (self.print_flag): 
                         print(log)

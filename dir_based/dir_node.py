@@ -141,7 +141,7 @@ class dir_node():
                     dir_line["protocol"] = "S"
                     
                     # Update log
-                    log = "Directory State Transition: I->S @ dir-block-" + str(head_msg["dirblk"]) + "!"
+                    log = "State transition I->S @ dir-block-" + str(head_msg["dirblk"]) + "!"
                     self.dir_log.append(log)
                     if self.print_flag:
                         print(log)
@@ -168,7 +168,7 @@ class dir_node():
                     dir_line["protocol"] = "M"
 
                     # Update log
-                    log = "Directory State Transition: I->M @ dir-block-" + str(head_msg["dirblk"]) + "!"
+                    log = "State transition I->M @ dir-block-" + str(head_msg["dirblk"]) + "!"
                     self.dir_log.append(log)
                     if self.print_flag:
                         print(log)
@@ -268,7 +268,7 @@ class dir_node():
                         dir_line["protocol"] = "M"
                         
                         # Update log
-                        log = "Directory State Transition: S->M @ dir-block-" + str(head_msg["dirblk"]) + "!"
+                        log = "State transition S->M @ dir-block-" + str(head_msg["dirblk"]) + "!"
                         self.dir_log.append(log)
                         if self.print_flag:
                             print(log)
@@ -281,7 +281,7 @@ class dir_node():
                         dir_line["protocol"] = "SM_A"
                         
                         # Update log
-                        log = "Directory State Transition: S->SM_A @ dir-block-" + str(head_msg["dirblk"]) + "!"
+                        log = "State transition S->SM_A @ dir-block-" + str(head_msg["dirblk"]) + "!"
                         self.dir_log.append(log)
                         if self.print_flag:
                             print(log)
@@ -309,7 +309,7 @@ class dir_node():
                         dir_line["addr"] = None
 
                         # Update log
-                        log = "Directory State Transition: S->I @ dir-block-" + str(head_msg["dirblk"]) + "!"
+                        log = "State transition S->I @ dir-block-" + str(head_msg["dirblk"]) + "!"
                         self.dir_log.append(log)
                         if self.print_flag:
                             print(log)
@@ -340,7 +340,7 @@ class dir_node():
                         dir_line["addr"] = None
 
                         # Update log
-                        log = "Directory State Transition: S->I @ dir-block-" + str(head_msg["dirblk"]) + "!"
+                        log = "State transition S->I @ dir-block-" + str(head_msg["dirblk"]) + "!"
                         self.dir_log.append(log)
                         if self.print_flag:
                             print(log)
@@ -377,7 +377,7 @@ class dir_node():
                     dir_line["protocol"] = "MS_D"
                     
                     # Update log
-                    log = "Directory State Transition: M->MS_D @ dir-block-" + str(head_msg["dirblk"]) + "!"
+                    log = "State transition M->MS_D @ dir-block-" + str(head_msg["dirblk"]) + "!"
                     self.dir_log.append(log)
                     if self.print_flag:
                         print(log)
@@ -404,7 +404,7 @@ class dir_node():
                     dir_line["protocol"] = "MM_A"
 
                     # Update log
-                    log = "Directory State Transition: M->MM_A @ dir-block-" + str(head_msg["dirblk"]) + "!"
+                    log = "State transition M->MM_A @ dir-block-" + str(head_msg["dirblk"]) + "!"
                     self.dir_log.append(log)
                     if self.print_flag:
                         print(log)
@@ -448,7 +448,7 @@ class dir_node():
                         dir_line["addr"] = None
 
                         # Update log
-                        log = "Directory State Transition: M->I @ dir-block-" + str(head_msg["dirblk"]) + "!"
+                        log = "State transition M->I @ dir-block-" + str(head_msg["dirblk"]) + "!"
                         self.dir_log.append(log)
                         if self.print_flag:
                             print(log)
@@ -499,7 +499,7 @@ class dir_node():
                         dir_line["protocol"] = "M"
                         
                         # Update log
-                        log = "Directory State Transition: SM_A->M @ dir-block-" + str(head_msg["dirblk"]) + "!"
+                        log = "State transition SM_A->M @ dir-block-" + str(head_msg["dirblk"]) + "!"
                         self.dir_log.append(log)
                         if self.print_flag:
                             print(log)
@@ -516,7 +516,7 @@ class dir_node():
                     dir_line["protocol"] = "M"
 
                     # Update log
-                    log = "Directory State Transition: MM_A->M @ dir-block-" + str(head_msg["dirblk"]) + "!"
+                    log = "State transition MM_A->M @ dir-block-" + str(head_msg["dirblk"]) + "!"
                     self.dir_log.append(log)
                     if self.print_flag:
                         print(log)
@@ -531,7 +531,7 @@ class dir_node():
                     dir_line["protocol"] = "S"
 
                     # Update log
-                    log = "Directory State Transition: MS_D->S @ dir-block-" + str(head_msg["dirblk"]) + "!"
+                    log = "State transition MS_D->S @ dir-block-" + str(head_msg["dirblk"]) + "!"
                     self.dir_log.append(log)
                     if self.print_flag:
                         print(log)
