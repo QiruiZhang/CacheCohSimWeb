@@ -88,10 +88,10 @@ body
         .float-child-six-col
             h4 Number of cache way: #{data.inst.cache_way}
     .float-container
-        if data.inst.protocol_type = 'dir_msi'
+        if data.inst.protocol_type == 'dir_msi'
             - lineNum = data.inst.mem_size/data.inst.line_size
 
-                    h2(style="float: left;") Home Node
+                    h2(style="float: left;") Home Node (cycle: #{data.cache.cycle})
                     table
                         tbody
                         tr
@@ -143,18 +143,24 @@ body
                 else
                     - var p_count = data.cache[icol-1]
                     p #{data.inst[node_id][ncol-1][0]} #{data.inst[node_id][ncol-1][1]}
-        h6 &nbsp
-        label(for='run_node') 
-            h4(style='text-align: right; margin-right: 2.5em;') Run:&nbsp
-                - var itr = 0
-                select#run_node(name='run_node')
-                    while itr++ < data.inst.num_cache
-                        if data.inst.run_node == (itr-1)
-                            option(value= (itr-1) selected) node_#{itr}
-                        else
-                            option(value= (itr-1)) node_#{itr}         
-        input(type='hidden' name='data' value=data)
-        if data.inst.reset == 0
-            input(type='submit' value='Submit' style='float: right; margin-right: 2.5em;height:40px; width:80px; background-color: lightblue;')
-        else 
-            input(type='submit' value='Step' style='float: right; margin-right: 2.5em;height:40px; width:50px; background-color: lightblue;')
+        .float-container
+            .float-child-two-col
+                h3 Message:
+                if data.inst.protocol_type == 'dir_msi' && data.inst.reset == 1
+                    p &nbsp &nbsp #{data.cache.msg}
+                    p &nbsp &nbsp #{data.cache[data.inst.run_node].log}
+            .float-child-two-col
+                label(for='run_node') 
+                    h4(style='text-align: right; margin-right: 2.5em;') Run:&nbsp
+                        - var itr = 0
+                        select#run_node(name='run_node')
+                            while itr++ < data.inst.num_cache
+                                if data.inst.run_node == (itr-1)
+                                    option(value= (itr-1) selected) node_#{itr}
+                                else
+                                    option(value= (itr-1)) node_#{itr}         
+                input(type='hidden' name='data' value=data)
+                if data.inst.reset == 0
+                    input(type='submit' value='Submit' style='float: right; margin-right: 2.5em;height:40px; width:80px; background-color: lightblue;')
+                else 
+                    input(type='submit' value='Step' style='float: right; margin-right: 2.5em;height:40px; width:50px; background-color: lightblue;')
