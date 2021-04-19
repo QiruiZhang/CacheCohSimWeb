@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.7
 # -*- coding: utf-8 -*-
 import mpsys_dir as mpd
 import json
@@ -23,12 +23,12 @@ if __name__ == "__main__":
     # Simulation Starts
     print_flag = False
     mpsys = mpd.mpsys_dir(inst_dict, print_flag)
-    if inst_dict["reset"] == 1:
-        pass
-    else:
-        if cache_dict_in != None:
-            mpsys.update_dict(cache_dict_in)
-        mpsys.run_cycle()
+    #if inst_dict["reset"] == 0:
+    #    pass
+    #else:
+    if cache_dict_in != None:
+        mpsys.update_dict(cache_dict_in)
+    mpsys.run_cycle()
 
     # Output cache.json
     cache_dict_out = mpsys.output_dict()
