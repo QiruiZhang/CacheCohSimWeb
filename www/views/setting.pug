@@ -1,0 +1,99 @@
+doctype html
+html(lang='en')
+head
+    meta(name='viewport' content='width=device-width, initial-scale=1')
+    style.
+        * {
+        box-sizing: border-box;
+        }
+        .float-container {
+        border: 2px solid #fff;
+        padding: 5px;
+        }
+        .float-child-two-col {
+        width:  50%;
+        float: left;
+        padding: 10px;
+        border: none;
+        }
+        .float-child-three-col {
+        width:  33.333%;
+        float: left;
+        padding: 10px;
+        border: none;
+        }
+        table, th, td {
+        border: 1px solid black;
+        }
+        td 
+        {
+            text-align: center; 
+            vertical-align: middle;
+            height: 50px; 
+            width: 50px;
+        }
+        table{
+        width: 100%
+        }
+        textarea{
+            height: 100%;
+            width: 100%;
+            -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+            -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+            box-sizing: border-box;         /* Opera/IE 8+ */
+        }
+        search {
+            width: 20em;  height: 2em;
+        }
+body
+    h1 Cache Coherence Simulator
+        h2 &nbsp Simulator configuration
+        form(action='/reset' method='post')
+            input(type='submit' value='Reset' style='float: right; margin-right: 2.5em; height:40px; width:50pxl; background-color: #4CAF50;' )
+        ul
+    form(action='/set' method='post')
+        .float-container
+            .float-child-two-col
+                label(for='protocol_type') 
+                    h3 Protocol type:&nbsp
+                        select#protocol_type(name='protocol_type')
+                            option(value='snp_msi' selected) snoop-based MSI
+                            option(value='snp_mesi') snoop-based MESI
+                            option(value='dir_msi') directory-based MSI
+                h3 &nbsp
+                label(for='cache_type') 
+                    h3 &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp Cache type:&nbsp
+                        select#cache_type(name='cache_type')
+                            option(value='c' selected) Custom
+                            option(value='d') Direct
+                            option(value='f') Fully
+                label(for='num_cache') 
+                    h3 &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp Number of nodes:&nbsp
+                        select#num_cache(name='num_cache')
+                            option(value=1 selected) 1
+                            option(value=2) 2
+                            option(value=3) 3
+                label(for='cache_way') 
+                    h3 Number of cache way:&nbsp
+                        select#cache_way(name='cache_way')
+                            option(value=2 selected) 2
+                            option(value=4 selected) 4
+            .float-child-two-col
+                h3 &nbsp
+                h3 &nbsp
+                label(for='line_size') 
+                    h3 &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp Block Size (B):&nbsp
+                        select#line_size(name='line_size')
+                            option(value=8 selected) 8
+                            option(value=16) 16
+                label(for='mem_size') 
+                    h3 &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp Memory Size (B):&nbsp
+                        select#mem_size(name='mem_size')
+                            option(value=512 selected) 512
+                label(for='cache_size') 
+                    h3 &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp Cache Size (B):&nbsp
+                        select#cache_size(name='cache_size')
+                            option(value=64 selected) 64
+                            option(value=128) 128
+                            option(value=256) 256
+        input(type='submit' value='Set' style='float: right; margin-right: 2.5em;height:40px; width:50px; background-color: lightblue;')
