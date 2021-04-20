@@ -15,8 +15,26 @@ head
         padding: 10px;
         border: 1px solid grey;
         }
+        .float-child-highlight {
+        width:  #{1.0/data.inst.num_cache*100}%;
+        float: left;
+        padding: 10px;
+        border: 1px solid red;
+        }
         .float-child-two-col {
         width:  50%;
+        float: left;
+        padding: 10px;
+        border: none;
+        }
+        .float-child-two-third-col {
+        width:  80%;
+        float: left;
+        padding: 10px;
+        border: none;
+        }
+        .float-child-one-third-col {
+        width:  20%;
         float: left;
         padding: 10px;
         border: none;
@@ -87,6 +105,7 @@ body
             h4 Memory Size (B): #{data.inst.mem_size}
         .float-child-six-col
             h4 Number of cache way: #{data.inst.cache_way}
+    - var state_color = {'M':"background-color:yellow",'E': "background-color:green",'S': "background-color:lightblue",'I': "background-color:white"}
     .float-container
         if data.inst.protocol_type == 'dir_msi'
             - lineNum = data.inst.mem_size/data.inst.line_size
@@ -96,20 +115,34 @@ body
                         tbody
                         tr
                             - irow = 0;
+                            - let state = "";
                             td State
                             while irow++ < lineNum
                                 if data.cache.dir.dict[irow-1].protocol === undefined
-                                    td #{data.cache.dir.dict[irow-1].state}
+                                    - state = data.cache.dir.dict[irow-1].state
                                 else 
-                                    td #{data.cache.dir.dict[irow-1].protocol}
+                                    - state = data.cache.dir.dict[irow-1].protocol
+                                td(style=state_color[state]) #{state}
                         tr
                             - var irow = 0;
                             td Addr
                             while irow++ < lineNum
-                                td #{data.cache.dir.dict[irow-1].addr}
+                                if data.cache.dir.dict[irow-1].protocol === undefined
+                                    - state = data.cache.dir.dict[irow-1].state
+                                else 
+                                    - state = data.cache.dir.dict[irow-1].protocol
+                                td(style=state_color[state]) #{data.cache.dir.dict[irow-1].addr}
     - var lineNum = data.inst.cache_size/data.inst.line_size
     - var ncol = 0;
     - var step_url = "";
+    - var all_finish_status = false;
+    - var finished_node_num = 0;
+    - var ii = 0
+    while ii++ < data.inst.num_cache
+        - let node_id = 'node_'+(ii-1)
+        if data.cache[ii-1].PC >= data.inst[node_id].length && finished_node_num++
+    if finished_node_num == data.inst.num_cache 
+        - all_finish_status = true
     if data.inst.reset == 0
         - step_url = "/instruction"
     else 
@@ -117,50 +150,88 @@ body
     form(action = step_url method='post')
         .float-container
         while ncol++ < data.inst.num_cache
-            - var node_id = 'node_'+(ncol-1)
+            - let node_id = 'node_'+(ncol-1)
+            if data.inst.protocol_type == 'dir_msi'
             .float-child
-                h2(style="float: left;") Node #{ncol}
-                p(style="float: right;") # Hits: 0 &nbsp &nbsp # Misses: 0 &nbsp &nbsp
+                if data.inst.run_node == 'all' || data.inst.run_node == ncol-1
+                    h2(style="float: left;color:red") Node #{ncol-1}
+                else
+                    h2(style="float: left;") Node #{ncol-1}
+                
                 table
                     tbody
                     tr
                         - var irow = 0;
+                        - let state = ""
                         td State
                         while irow++ < lineNum
                             if data.cache[ncol-1].cache[irow-1].protocol === undefined
-                                td #{data.cache[ncol-1].cache[irow-1].state}
+                                - state = data.cache[ncol-1].cache[irow-1].state
                             else 
-                                td #{data.cache[ncol-1].cache[irow-1].protocol}
+                                - state = data.cache[ncol-1].cache[irow-1].protocol
+                            td(style=state_color[state]) #{state}
                     tr
                         - var irow = 0;
                         td Addr
                         while irow++ < lineNum
-                            td #{data.cache[ncol-1].cache[irow-1].addr}
-                h4 Instructions
+                            if data.cache[ncol-1].cache[irow-1].protocol === undefined
+                                - state = data.cache[ncol-1].cache[irow-1].state
+                            else 
+                                - state = data.cache[ncol-1].cache[irow-1].protocol
+                            td(style=state_color[state]) #{data.cache[ncol-1].cache[irow-1].addr}
+                h3 Instructions
                 if data.inst.reset == 0
                     label(for='instr') 
                     textarea#instr(name='instr' rows='8')
                 else
-                    - var p_count = data.cache[icol-1]
-                    p #{data.inst[node_id][ncol-1][0]} #{data.inst[node_id][ncol-1][1]}
+                    - var p_count = data.cache[ncol-1].PC
+                    if p_count  == 0
+                        p(style="background-color:silver; color:black") Previous: start
+                        if p_count+1 <= data.inst[node_id].length && data.inst[node_id][p_count][0] != ""
+                            p &nbsp&nbsp&nbsp&nbsp&nbsp Next: #{data.inst[node_id][p_count][0]} #{data.inst[node_id][p_count][1]}
+                        else 
+                            p &nbsp&nbsp&nbsp&nbsp&nbsp Next: end
+                    else if p_count > data.inst[node_id].length
+                        - let code_len = data.inst[node_id].length
+                        p(style="background-color:silver; color:black") Previous: #{data.inst[node_id][code_len-1][0]} #{data.inst[node_id][code_len-1][1]}
+                        p &nbsp&nbsp&nbsp&nbsp&nbsp Next: end
+                    else
+                        p(style="background-color:silver; color:black") Previous: #{data.inst[node_id][p_count-1][0]} #{data.inst[node_id][p_count-1][1]}
+                        if p_count+1 <= data.inst[node_id].length && data.inst[node_id][p_count][0] != ""
+                            p &nbsp&nbsp&nbsp&nbsp&nbsp Next: #{data.inst[node_id][p_count][0]} #{data.inst[node_id][p_count][1]}
+                        else 
+                            p &nbsp&nbsp&nbsp&nbsp&nbsp Next: end
         .float-container
-            .float-child-two-col
+            .float-child-two-third-col
                 h3 Message:
                 if data.inst.protocol_type == 'dir_msi' && data.inst.reset == 1
-                    p &nbsp &nbsp #{data.cache.msg}
-                    p &nbsp &nbsp #{data.cache[data.inst.run_node].log}
-            .float-child-two-col
-                label(for='run_node') 
-                    h4(style='text-align: right; margin-right: 2.5em;') Run:&nbsp
-                        - var itr = 0
-                        select#run_node(name='run_node')
-                            while itr++ < data.inst.num_cache
-                                if data.inst.run_node == (itr-1)
-                                    option(value= (itr-1) selected) node_#{itr}
-                                else
-                                    option(value= (itr-1)) node_#{itr}         
-                input(type='hidden' name='data' value=data)
-                if data.inst.reset == 0
-                    input(type='submit' value='Submit' style='float: right; margin-right: 2.5em;height:40px; width:80px; background-color: lightblue;')
+                    td Home_node:
+                        td &nbsp #{data.cache.msg}
+                    br
+                    - let i = 0
+                    while i++ < data.inst.num_cache 
+                        td &nbsp &nbsp &nbsp&nbsp Node_#{i-1}:
+                            td &nbsp #{data.cache[i-1].log}
+                        br
+            .float-child-one-third-col
+                if all_finish_status == false
+                    label(for='run_node') 
+                        h4(style='text-align: right; margin-right: 2.5em;') Run:&nbsp
+                            - let itr = 0
+                            select#run_node(name='run_node')
+                                while itr++ < data.inst.num_cache
+                                    - let node_id = 'node_'+(itr-1)
+                                    if data.inst.reset == 0 || data.cache[itr-1].PC < data.inst[node_id].length
+                                        if data.inst.run_node == (itr-1)
+                                            option(value= (itr-1) selected) Node #{itr}
+                                        else
+                                            option(value= (itr-1)) Node #{itr}
+                                if data.inst.protocol_type == 'dir_msi' && finished_node_num < data.inst.num_cache-1
+                                    option(value= 'all') All nodes
+                    input(type='hidden' name='data' value=data)
+                    if data.inst.reset == 0
+                        input(type='submit' value='Submit' style='float: right; margin-right: 2.5em;height:40px; width:80px; background-color: lightblue;')
+                    else 
+                        input(type='submit' value='Step' style='float: right; margin-right: 2.5em;height:40px; width:50px; background-color: lightblue;')
                 else 
-                    input(type='submit' value='Step' style='float: right; margin-right: 2.5em;height:40px; width:50px; background-color: lightblue;')
+                    h4(style='text-align: right; margin-right: 2.5em;') Simulation has finished!

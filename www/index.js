@@ -29,7 +29,6 @@ app.post('/set', (req, res) => {
 });
 
 app.post('/instruction', (req, res) => {
-  console.log('/instruction');
   let data = update_instruction(req.body);
   let simulator_program = find_simulator(data.inst["protocol_type"]);
   let simulator = spawn(simulator_program, [JSON.stringify(data.inst)]);
@@ -38,16 +37,11 @@ app.post('/instruction', (req, res) => {
     data.cache = parsed_d.cache;
     data.inst = parsed_d.inst;
     data.inst['reset'] = 1;
-    //console.log(JSON.stringify(data, null, 4));
-    console.log(JSON.stringify(data.inst));
-    console.log('-------------------------')
-    console.log(JSON.stringify(data.cache));
     res.render('index', { data: data });
   });
 });
 
 app.post('/step', (req, res) => {
-  console.log('/step');
   let data = JSON.parse(req.body.data);
   data.inst.run_node = req.body.run_node;
   data = parse_int(data);
@@ -123,7 +117,10 @@ function parse_int(data) {
   data.inst["mem_size"] = parseInt(data.inst["mem_size"]);
   data.inst["cache_way"] = parseInt(data.inst["cache_way"]);
   data.inst["reset"] = parseInt(data.inst["reset"]);
-  data.inst["run_node"] = parseInt(data.inst["run_node"]);
+  if(data.inst["run_node"] != 'all'){
+    data.inst["run_node"] = parseInt(data.inst["run_node"]);
+  }
+  
   for (let i = 0; i < data.inst["num_cache"]; i++) {
     let node_id = "node_" + i;
     data.inst[node_id].forEach(function (part, index, theArray) {
