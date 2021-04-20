@@ -72,18 +72,18 @@ head
             width: 20em;  height: 2em;
         }
 body
-    h2 Cache Coherence Simulator
+    h1 Cache Coherence Simulator
     form(action='/reset' method='post')
         input(type='submit' value='Reset' style='float: right; margin-right: 2.5em; height:40px; width:50pxl; background-color: #4CAF50;' )
     case data.inst.protocol_type
         when 'snp_msi'
-            h4 Protocol: Snoop-based MSI (M-modifed | S-shared | I-invalid)
+            h3 Protocol: Snoop-based MSI (M-modifed | S-shared | I-invalid)
         when 'snp_mesi'
-            h4 Protocol: Snoop-based MESI (M-modifed | E-exclusive | S-shared | I-invalid)
+            h3 Protocol: Snoop-based MESI (M-modifed | E-exclusive | S-shared | I-invalid)
         when 'dir_msi'
-            h4 Protocol: Directory-based MSI (M-modifed | S-shared | I-invalid)
+            h3 Protocol: Directory-based MSI (M-modifed | S-shared | I-invalid)
         default
-            h4 Protocol: Unknown
+            h3 Protocol: Unknown
     .float-container
         .float-child-six-col
             case data.inst.cache_type
@@ -109,29 +109,31 @@ body
     .float-container
         if data.inst.protocol_type == 'dir_msi'
             - lineNum = data.inst.mem_size/data.inst.line_size
-
+                if data.cache.cycle != undefined
                     h2(style="float: left;") Home Node (cycle: #{data.cache.cycle})
-                    table
-                        tbody
-                        tr
-                            - irow = 0;
-                            - let state = "";
-                            td State
-                            while irow++ < lineNum
-                                if data.cache.dir.dict[irow-1].protocol === undefined
-                                    - state = data.cache.dir.dict[irow-1].state
-                                else 
-                                    - state = data.cache.dir.dict[irow-1].protocol
-                                td(style=state_color[state]) #{state}
-                        tr
-                            - var irow = 0;
-                            td Addr
-                            while irow++ < lineNum
-                                if data.cache.dir.dict[irow-1].protocol === undefined
-                                    - state = data.cache.dir.dict[irow-1].state
-                                else 
-                                    - state = data.cache.dir.dict[irow-1].protocol
-                                td(style=state_color[state]) #{data.cache.dir.dict[irow-1].addr}
+                else 
+                    h2(style="float: left;") Home Node
+                table
+                    tbody
+                    tr
+                        - irow = 0;
+                        - let state = "";
+                        td State
+                        while irow++ < lineNum
+                            if data.cache.dir.dict[irow-1].protocol === undefined
+                                - state = data.cache.dir.dict[irow-1].state
+                            else 
+                                - state = data.cache.dir.dict[irow-1].protocol
+                            td(style=state_color[state]) #{state}
+                    tr
+                        - var irow = 0;
+                        td Addr
+                        while irow++ < lineNum
+                            if data.cache.dir.dict[irow-1].protocol === undefined
+                                - state = data.cache.dir.dict[irow-1].state
+                            else 
+                                - state = data.cache.dir.dict[irow-1].protocol
+                            td(style=state_color[state]) #{data.cache.dir.dict[irow-1].addr}
     - var lineNum = data.inst.cache_size/data.inst.line_size
     - var ncol = 0;
     - var step_url = "";
@@ -140,7 +142,7 @@ body
     - var ii = 0
     while ii++ < data.inst.num_cache
         - let node_id = 'node_'+(ii-1)
-        if data.cache[ii-1].PC >= data.inst[node_id].length && finished_node_num++
+        if (data.cache[ii-1].PC >= data.inst[node_id].length || (data.inst[node_id].length==1 && data.inst[node_id][0][0]=="")) && finished_node_num++
     if finished_node_num == data.inst.num_cache 
         - all_finish_status = true
     if data.inst.reset == 0
@@ -154,10 +156,10 @@ body
             if data.inst.protocol_type == 'dir_msi'
             .float-child
                 if data.inst.run_node == 'all' || data.inst.run_node == ncol-1
-                    h2(style="float: left;color:red") Node #{ncol-1}
+                    h2(style="float: left;color:red") Node #{ncol-1} (active)
                 else
                     h2(style="float: left;") Node #{ncol-1}
-                
+
                 table
                     tbody
                     tr
@@ -223,9 +225,9 @@ body
                                     - let node_id = 'node_'+(itr-1)
                                     if data.inst.reset == 0 || data.cache[itr-1].PC < data.inst[node_id].length
                                         if data.inst.run_node == (itr-1)
-                                            option(value= (itr-1) selected) Node #{itr}
-                                        else
-                                            option(value= (itr-1)) Node #{itr}
+                                            option(value= (itr-1) selected) Node #{itr-1}
+                                        else if !(data.inst[node_id].length == 1 && data.inst[node_id][0][0] == "")
+                                            option(value= (itr-1)) Node #{itr-1}
                                 if data.inst.protocol_type == 'dir_msi' && finished_node_num < data.inst.num_cache-1
                                     option(value= 'all') All nodes
                     input(type='hidden' name='data' value=data)

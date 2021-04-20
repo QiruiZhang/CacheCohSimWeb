@@ -48,33 +48,25 @@ app.post('/step', (req, res) => {
   let simulator_program = find_simulator(data.inst["protocol_type"]);
   console.log(simulator_program);
   let simulator = spawn(simulator_program, [JSON.stringify(data.inst), JSON.stringify(data.cache)], { stdio: 'pipe' });
-  
+
   let bufferArray = [];
   simulator.stdout.on('data', (d) => {
     bufferArray.push(d)
   });
-  
+
   simulator.stderr.on('data', (d) => {
     console.error('stderr: ${d}');
   });
-  
+
   simulator.on('close', (code) => {
     console.log('child process exited with code ${code}');
-    let dataBuffer =  Buffer.concat(bufferArray);
+    let dataBuffer = Buffer.concat(bufferArray);
     let parsed_d = JSON.parse(dataBuffer.toString());
     console.log(dataBuffer.toString());
     data.cache = parsed_d.cache;
     data.inst = parsed_d.inst;
     res.render('index', { data: data });
   });
-
-  // simulator.stdout.on('data', function (d) {
-  //   let parsed_d = JSON.parse(d.toString());
-  //   console.log(d.toString());
-  //   data.cache = parsed_d.cache;
-  //   data.inst = parsed_d.inst;
-  //   res.render('index', { data: data });
-  // });
 });
 
 app.post('/reset', (req, res) => {
@@ -117,10 +109,10 @@ function parse_int(data) {
   data.inst["mem_size"] = parseInt(data.inst["mem_size"]);
   data.inst["cache_way"] = parseInt(data.inst["cache_way"]);
   data.inst["reset"] = parseInt(data.inst["reset"]);
-  if(data.inst["run_node"] != 'all'){
+  if (data.inst["run_node"] != 'all') {
     data.inst["run_node"] = parseInt(data.inst["run_node"]);
   }
-  
+
   for (let i = 0; i < data.inst["num_cache"]; i++) {
     let node_id = "node_" + i;
     data.inst[node_id].forEach(function (part, index, theArray) {
@@ -176,7 +168,7 @@ function initialize_data(inst_body) {
     cache0[i]["LSR"] = [];
   }
   let n_mem = inst0.mem_size / inst0.line_size;
-  cache0['dir'] = {'dict':{}};
+  cache0['dir'] = { 'dict': {} };
   for (let k = 0; k < n_mem; k++) {
     cache0['dir']["dict"][k] = {
       "addr": null,
