@@ -208,14 +208,17 @@ body
             .float-child-two-third-col
                 h3 Message:
                 if data.inst.protocol_type == 'dir_msi' && data.inst.reset == 1
-                    td Home_node:
-                        td &nbsp #{data.cache.msg}
+                    td &nbsp &nbsp &nbsp&nbsp&nbsp &nbsp &nbsp&nbsp&nbsp &nbsp &nbsp Home_node:
+                        td &nbsp #{data.cache.dir.msg}
                     br
                     - let i = 0
                     while i++ < data.inst.num_cache 
-                        td &nbsp &nbsp &nbsp&nbsp Node_#{i-1}:
+                        td &nbsp &nbsp &nbsp&nbsp&nbsp &nbsp &nbsp&nbsp&nbsp &nbsp &nbsp&nbsp&nbsp &nbsp &nbsp&nbsp Node_#{i-1}:
                             td &nbsp #{data.cache[i-1].log}
                         br
+                    td Interconnet transactions:
+                        td #{data.cache.msg}
+                    br
             .float-child-one-third-col
                 if all_finish_status == false
                     label(for='run_node') 
@@ -230,7 +233,10 @@ body
                                         else if !(data.inst[node_id].length == 1 && data.inst[node_id][0][0] == "")
                                             option(value= (itr-1)) Node #{itr-1}
                                 if data.inst.protocol_type == 'dir_msi' && finished_node_num < data.inst.num_cache-1
-                                    option(value= 'all') All nodes
+                                    if data.inst.run_node == 'all'
+                                        option(value= 'all' selected) All nodes
+                                    else 
+                                        option(value= 'all') All nodes
                     input(type='hidden' name='data' value=data)
                     if data.inst.reset == 0
                         input(type='submit' value='Submit' style='float: right; margin-right: 2.5em;height:40px; width:80px; background-color: lightblue;')
