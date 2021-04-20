@@ -143,8 +143,10 @@ body
     - var ii = 0
     while ii++ < data.inst.num_cache
         - let node_id = 'node_'+(ii-1)
-        if (data.cache[ii-1].PC >= data.inst[node_id].length || (data.inst[node_id].length==1 && data.inst[node_id][0][0]=="")) && finished_node_num++
-    if finished_node_num == data.inst.num_cache 
+        if data.inst.protocol_type == 'dir_msi'
+            if ((data.cache[ii-1].PC >= data.inst[node_id].length && data.cache[ii-1].CRHR == false) || (data.inst[node_id].length==1 && data.inst[node_id][0][0]=="")) && finished_node_num++
+        else if (data.cache[ii-1].PC >= data.inst[node_id].length || (data.inst[node_id].length==1 && data.inst[node_id][0][0]=="")) && finished_node_num++
+    if finished_node_num == data.inst.num_cache
         - all_finish_status = true
     if data.inst.reset == 0
         - step_url = "/instruction"
@@ -209,7 +211,7 @@ body
                 h3 Message:
                 if data.inst.protocol_type == 'dir_msi' && data.inst.reset == 1
                     td &nbsp &nbsp &nbsp&nbsp&nbsp &nbsp &nbsp&nbsp&nbsp &nbsp &nbsp Home_node:
-                        td &nbsp#{data.cache.dir.msg}
+                        td &nbsp#{data.cache.dir.log}
                     br
                     - let i = 0
                     while i++ < data.inst.num_cache 
@@ -227,16 +229,24 @@ body
                             select#run_node(name='run_node')
                                 while itr++ < data.inst.num_cache
                                     - let node_id = 'node_'+(itr-1)
-                                    if data.inst.reset == 0 || data.cache[itr-1].PC < data.inst[node_id].length
-                                        if data.inst.run_node == (itr-1)
-                                            option(value= (itr-1) selected) Node #{itr-1}
-                                        else if !(data.inst[node_id].length == 1 && data.inst[node_id][0][0] == "")
-                                            option(value= (itr-1)) Node #{itr-1}
-                                if data.inst.protocol_type == 'dir_msi' && finished_node_num < data.inst.num_cache-1
-                                    if data.inst.run_node == 'all'
-                                        option(value= 'all' selected) All nodes
+                                    if data.inst.protocol_type == 'dir_msi'
+                                        if data.inst.reset == 0 || data.cache[itr-1].PC < data.inst[node_id].length || data.cache[itr-1].CRHR == true
+                                            if data.inst.run_node == (itr-1)
+                                                option(value= (itr-1) selected) Node #{itr-1}
+                                            else if !(data.inst[node_id].length == 1 && data.inst[node_id][0][0] == "")
+                                                option(value= (itr-1)) Node #{itr-1}
                                     else 
-                                        option(value= 'all') All nodes
+                                        if data.inst.reset == 0 || data.cache[itr-1].PC < data.inst[node_id].length
+                                            if data.inst.run_node == (itr-1)
+                                                option(value= (itr-1) selected) Node #{itr-1}
+                                            else if !(data.inst[node_id].length == 1 && data.inst[node_id][0][0] == "")
+                                                option(value= (itr-1)) Node #{itr-1}
+                                if data.inst.protocol_type == 'dir_msi'
+                                    if finished_node_num < data.inst.num_cache-1
+                                        if data.inst.run_node == 'all'
+                                            option(value= 'all' selected) All nodes
+                                        else 
+                                            option(value= 'all') All nodes
                     input(type='hidden' name='data' value=data)
                     if data.inst.reset == 0
                         input(type='submit' value='Submit' style='float: right; margin-right: 2.5em;height:40px; width:80px; background-color: lightblue;')
