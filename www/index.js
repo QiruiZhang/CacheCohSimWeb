@@ -4,6 +4,10 @@ const app = express();
 
 const { spawn } = require('child_process');
 
+app.use(express.urlencoded({
+  extended: true
+}))
+
 const port = 3000;
 
 app.set("view engine", "pug");
