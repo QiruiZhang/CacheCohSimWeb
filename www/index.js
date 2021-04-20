@@ -4,18 +4,13 @@ const app = express();
 
 const { spawn } = require('child_process');
 
-app.use(express.urlencoded({
-  extended: true
-}))
-
-//const hostname = "192.168.0.109";
-//const fake_host = "0.0.0.0";
 const port = 3000;
 
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 
-app.listen(port, function () {
+
+app.listen(port, '0.0.0.0', function () {
   console.log('Listening to port:  ' + port);
 });
 
