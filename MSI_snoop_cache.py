@@ -103,7 +103,7 @@ class direct_cache(cache):
             #self.cache_dict[int(index, 2)]["dirty"] = True
         #state = "S"
         if (self.cache_dict[str(int(index, 2))]["state"] == "S" and
-                tag == self.cache_dict[int(index, 2)]["tag"]):
+                tag == self.cache_dict[str(int(index, 2))]["tag"]):
             hit = True
             pass_data = self.bus.BusInv(self.cache_ID, addr)
             self.cache_dict[str(int(index, 2))]["addr"] = addr
@@ -226,12 +226,12 @@ class direct_cache(cache):
         if (self.cache_dict[str(int(index, 2))]["state"] == "S" and
                 tag == self.cache_dict[str(int(index, 2))]["tag"]):
             valid = True
-            BusReply = self.cache_dict[int(index, 2)]["data"]
+            #BusReply = self.cache_dict[int(index, 2)]["data"]
         if (self.cache_dict[str(int(index, 2))]["state"] == "M" and
                 tag == self.cache_dict[str(int(index, 2))]["tag"]):
             valid = True
             self.cache_dict[str(int(index, 2))]["state"] = "S"
-            BusReply = self.cache_dict[str(int(index, 2))]["data"]
+            #BusReply = self.cache_dict[str(int(index, 2))]["data"]
             #mem snarf
             mem = True
             mem_addr = addr
