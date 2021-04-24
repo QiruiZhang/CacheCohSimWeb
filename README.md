@@ -7,7 +7,7 @@ This simulator is designed for the final project of Win2021 University of Michig
 ### 1.1. **Operating System**
 Please make sure you use Ubuntu 18.04 LTS for setting up the server. And please make sure you have Python3 installed.
 
-### 1.2. **Node JS**
+### 1.2. **Node.js**
 Clone the repository. In the repo directory:
 ```
     cd ./www
