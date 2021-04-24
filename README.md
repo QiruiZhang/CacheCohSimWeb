@@ -7,10 +7,8 @@ This simulator is designed for the final project of Win2021 University of Michig
 ### 1.1. **Operating System**
 Please make sure you use Ubuntu 18.04 LTS for setting up the server.
 
-### 1.2. **Clone the Repository**
-
-### 1.3. **Node JS**
-In the repo directory:
+### 1.2. **Node JS**
+Clone the repository. In the repo directory:
 ```
     cd ./www
     sudo apt-get install nodejs npm
